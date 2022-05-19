@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/drawable/btn_rouned.xml" value="0.5348958333333333" />
+        <entry key="app/src/main/res/drawable/btn_rouned_r.xml" value="0.5348958333333333" />
+        <entry key="app/src/main/res/drawable/edit_text_sq.xml" value="0.5348958333333333" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.5348958333333333" />
+        <entry key="app/src/main/res/drawable/ic_line_5.xml" value="0.5348958333333333" />
+        <entry key="app/src/main/res/drawable/ic_line_6_2.xml" value="0.5348958333333333" />
+        <entry key="app/src/main/res/drawable/rounded_edittext.xml" value="0.5348958333333333" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.4523809523809524" />
+        <entry key="app/src/main/res/layout/add_item_fragment.xml" value="0.51875" />
+        <entry key="app/src/main/res/layout/authentication.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/authorization.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/home_fragment.xml" value="0.51875" />
+        <entry key="app/src/main/res/layout/item.xml" value="0.51875" />
+        <entry key="app/src/main/res/layout/item_detail_fragment.xml" value="0.51875" />
+        <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.51875" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

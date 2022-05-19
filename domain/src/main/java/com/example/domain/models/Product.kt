@@ -1,0 +1,14 @@
+package com.example.domain.models
+
+import java.io.Serializable
+
+class Product (
+    var productID: Int = 0,
+    val productName: String,
+    val productLink: String,
+    val productPrice: Int,
+    val amount: Int,
+    var totalAmount: Int = 0,
+    val city: String,
+    val productPhoto: String
+) : Serializable
