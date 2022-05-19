@@ -19,10 +19,11 @@
         android:textAlignment="center"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_city"
         app:layout_constraintTop_toBottomOf="@+id/tv_amount"
         app:layout_constraintVertical_bias="0.0"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="248dp" />
+        tools:ignore="MissingConstraints" />
 
     <ImageButton
         android:id="@+id/btn_plus"
@@ -44,6 +45,8 @@
         android:background="@drawable/btn_rouned_l"
         android:src="@drawable/ic_minus"
         app:layout_constraintEnd_toStartOf="@+id/ed_totalAmount"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/tv_city"
         app:layout_constraintTop_toBottomOf="@+id/tv_amount" />
 
     <TextView
@@ -100,9 +103,7 @@
             android:id="@+id/iv_productPhoto"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:background="@drawable/rounded_edittext"
             android:scaleType="centerCrop"
-            android:src="@drawable/elka"
             tools:layout_editor_absoluteX="31dp"
             tools:layout_editor_absoluteY="36dp" />
 
@@ -123,13 +124,14 @@
         android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
         android:layout_marginTop="8dp"
         android:text="Ссылка на товар:"
         android:textColor="@color/black"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.231"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_city" />
 
@@ -155,11 +157,24 @@
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="72dp"
-        android:text="купить"
         android:backgroundTint="#343434"
+        android:text="купить"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toEndOf="@+id/tv_city"
         app:layout_constraintTop_toBottomOf="@+id/ed_totalAmount" />
+
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/cream"
+        android:src="@drawable/ic_back_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

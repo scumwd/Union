@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
@@ -35,13 +36,14 @@ class ProductAdapter(private val context: Context): RecyclerView.Adapter<Product
         holder.itemView.tvCity.text = listProduct[position].city
         holder.itemView.tvCount.text = "${listProduct[position].totalAmount} из ${listProduct[position].amount}"
         holder.itemView.tvPrice.text = "${listProduct[position].productPrice}$ за шт"
-        Log.e("link",listProduct[position].productPhoto )
-        Glide.with(APP)
-            .load(listProduct[position].productPhoto)
+        val resId = R.drawable.elka
+        Glide
+            .with(context)
+            .load(resId)
+            .dontAnimate()
             .into(holder.itemView.iv_productPhoto)
-        holder.itemView.setOnClickListener{
+        Log.e("link",listProduct[position].productPhoto )
 
-        }
     }
 
     override fun getItemCount(): Int {
@@ -57,7 +59,7 @@ class ProductAdapter(private val context: Context): RecyclerView.Adapter<Product
     override fun onViewAttachedToWindow(holder: ProductViewHolder) {
         super.onViewAttachedToWindow(holder)
         holder.itemView.setOnClickListener {
-
+            HomeFragment.clickProduct(listProduct[holder.adapterPosition])
         }
     }
 
