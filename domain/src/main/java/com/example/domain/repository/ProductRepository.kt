@@ -1,10 +1,11 @@
 package com.example.domain.repository
 
 import androidx.lifecycle.LiveData
-import com.example.domain.models.Product
+import com.example.domain.models.ProductDomain
 
 interface ProductRepository {
-    val allProduct: LiveData<List<Product>>
-    suspend fun insertProduct(product: Product, onSuccess:() -> Unit )
-    suspend fun deleteProduct(product: Product, onSuccess:() -> Unit )
+    val allProductDomain: LiveData<List<ProductDomain>>
+    suspend fun insertProduct(productDomain: ProductDomain, onSuccess: () -> Unit)
+    suspend fun deleteProduct(productDomain: ProductDomain, onSuccess: () -> Unit)
+    suspend fun updateProduct(productDomain: ProductDomain, onSuccess: () -> Unit)
 }

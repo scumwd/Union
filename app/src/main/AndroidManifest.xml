@@ -15,20 +15,20 @@
         android:theme="@style/Theme.Union"
         tools:targetApi="m">
         <activity
-            android:name=".presentation.screen.login.AuthorizationActivity"
+            android:name=".presentation.screen.register.AuthorizationActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name=".presentation.screen.register.AuthenticationActivity"
-            android:exported="true">
-        </activity>
-        <activity
-            android:name=".presentation.MainActivity"
+            android:name=".presentation.screen.login.AuthenticationActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".presentation.MainActivity"
+            android:exported="true">
         </activity>
     </application>
 

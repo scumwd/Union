@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "product_table")
-class Product (
-    @PrimaryKey (autoGenerate = true)
+class ProductData(
+    @PrimaryKey(autoGenerate = true)
     var productId: Int = 0,
 
     @ColumnInfo
@@ -16,7 +16,7 @@ class Product (
     var productCity: String = "",
 
     @ColumnInfo
-    var productLink: String ="",
+    var productLink: String = "",
 
     @ColumnInfo
     var productPrice: Int = 0,
@@ -30,4 +30,4 @@ class Product (
     @ColumnInfo
     var productPhoto: String = "",
 
-)
+    )

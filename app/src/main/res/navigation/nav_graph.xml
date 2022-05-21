@@ -23,7 +23,11 @@
         android:id="@+id/profileFragment"
         android:name="com.example.union.presentation.screen.profile.ProfileFragment"
         android:label="profile_fragment"
-        tools:layout="@layout/profile_fragment" />
+        tools:layout="@layout/profile_fragment" >
+        <action
+            android:id="@+id/action_profileFragment_to_orderDetailFragment"
+            app:destination="@id/orderDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/itemDetailFragment"
         android:name="com.example.union.presentation.screen.ItemDetail.ItemDetailFragment"
@@ -32,5 +36,14 @@
         <action
             android:id="@+id/action_itemDetailFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderDetailFragment"
+        android:name="com.example.union.presentation.screen.orderDetail.OrderDetailFragment"
+        android:label="order_detail_fragment"
+        tools:layout="@layout/order_detail_fragment" >
+        <action
+            android:id="@+id/action_orderDetailFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 </navigation>

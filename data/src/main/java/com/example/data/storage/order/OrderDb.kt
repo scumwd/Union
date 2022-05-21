@@ -1,4 +1,4 @@
-package com.example.data.storage.product
+package com.example.data.storage.order
 
 import android.content.Context
 import androidx.room.Database
@@ -7,21 +7,22 @@ import androidx.room.RoomDatabase
 import com.example.data.models.OrderData
 import com.example.data.models.ProductData
 import com.example.data.models.UserData
+import com.example.data.storage.product.ProductDao
 
 @Database(entities = [ProductData::class, OrderData::class, UserData::class], version = 5)
-abstract class ProductDb : RoomDatabase() {
-    abstract fun getProductDao(): ProductDao
+abstract class OrderDb : RoomDatabase() {
+    abstract fun getOrderDao(): ProductDao
 
     companion object {
-        private var database: ProductDb? = null
+        private var database: OrderDb? = null
 
         @Synchronized
-        fun getInstance(context: Context): ProductDb {
+        fun getInstance(context: Context): OrderDb {
             return if (database == null) {
-                database = Room.databaseBuilder(context, ProductDb::class.java, "dbProd").build()
-                database as ProductDb
+                database = Room.databaseBuilder(context, OrderDb::class.java, "dbOrd").build()
+                database as OrderDb
             } else {
-                database as ProductDb
+                database as OrderDb
             }
         }
     }

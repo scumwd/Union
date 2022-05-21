@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cream"
-    tools:context=".presentation.screen.register.AuthenticationActivity">
+    tools:context=".presentation.screen.login.AuthenticationActivity">
 
     <TextView
         android:id="@+id/textView"

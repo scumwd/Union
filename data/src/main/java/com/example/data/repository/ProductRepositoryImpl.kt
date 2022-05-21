@@ -1,17 +1,18 @@
 package com.example.data.repository
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
-import com.example.data.models.Product
+import com.example.data.models.ProductData
 import com.example.data.storage.product.ProductDao
+import com.example.domain.models.ProductDomain
 import com.example.domain.repository.ProductRepository
 
 class ProductRepositoryImpl(private val productDao: ProductDao) : ProductRepository {
 
-    override val allProduct: LiveData<List<com.example.domain.models.Product>>
-        get() = productDao.getAllProduct().map { list -> list.map{ productLocal ->
-                com.example.domain.models.Product(
+    override val allProductDomain: LiveData<List<ProductDomain>>
+        get() = productDao.getAllProduct().map { list ->
+            list.map { productLocal ->
+                ProductDomain(
                     productID = productLocal.productId,
                     productPhoto = productLocal.productPhoto,
                     productPrice = productLocal.productPrice,
@@ -24,29 +25,47 @@ class ProductRepositoryImpl(private val productDao: ProductDao) : ProductReposit
             }
         }
 
-    override suspend fun insertProduct(product: com.example.domain.models.Product, onSuccess: () -> Unit) {
-        val productDb = Product(
-            productName = product.productName,
-            productCity = product.city,
-            productLink = product.productLink,
-            productPrice = product.productPrice,
-            amount = product.amount,
-            productPhoto = product.productPhoto
+    override suspend fun insertProduct(productDomain: ProductDomain, onSuccess: () -> Unit) {
+        val productDb = ProductData(
+            productName = productDomain.productName,
+            productCity = productDomain.city,
+            productLink = productDomain.productLink,
+            productPrice = productDomain.productPrice,
+            amount = productDomain.amount,
+            productPhoto = productDomain.productPhoto
         )
-        productDao.insert(product = productDb)
+        productDao.insert(productData = productDb)
         onSuccess()
     }
 
-    override suspend fun deleteProduct(product: com.example.domain.models.Product, onSuccess: () -> Unit) {
-        val productDb = Product(
-            productName = product.productName,
-            productCity = product.city,
-            productLink = product.productLink,
-            productPrice = product.productPrice,
-            amount = product.amount,
-            productPhoto = product.productPhoto
+    override suspend fun deleteProduct(productDomain: ProductDomain, onSuccess: () -> Unit) {
+        val productDb = ProductData(
+            productName = productDomain.productName,
+            productCity = productDomain.city,
+            productLink = productDomain.productLink,
+            productPrice = productDomain.productPrice,
+            amount = productDomain.amount,
+            productPhoto = productDomain.productPhoto,
+            totalAmount = productDomain.totalAmount,
+            productId = productDomain.productID
         )
-        productDao.delete(product = productDb)
+        productDao.delete(productData = productDb)
+        onSuccess()
+    }
+
+    override suspend fun updateProduct(productDomain: ProductDomain, onSuccess: () -> Unit) {
+        val productDb = ProductData(
+            productName = productDomain.productName,
+            productCity = productDomain.city,
+            productLink = productDomain.productLink,
+            productPrice = productDomain.productPrice,
+            amount = productDomain.amount,
+            totalAmount = productDomain.totalAmount,
+            productPhoto = productDomain.productPhoto,
+            productId = productDomain.productID
+
+        )
+        productDao.update(productDb)
         onSuccess()
     }
 }

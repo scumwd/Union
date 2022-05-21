@@ -13,23 +13,32 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.example.domain.models.Product
+import com.example.domain.models.ProductDomain
 import com.example.union.R
 import com.example.union.adapter.ProductAdapter
 import com.example.union.databinding.HomeFragmentBinding
 import com.example.union.presentation.APP
-import kotlin.math.log
+import com.google.firebase.auth.FirebaseAuth
 
 class HomeFragment : Fragment() {
 
     lateinit var recyclerView: RecyclerView
-    private lateinit var viewModel: HomeViewModel
     lateinit var binding: HomeFragmentBinding
+    lateinit var adapter: ProductAdapter
+    lateinit var mAuth: FirebaseAuth
+
+    companion object {
+        fun clickProduct(productDomain: ProductDomain) {
+            val bundle = Bundle()
+            bundle.putSerializable("product", productDomain)
+            APP.navController.navigate(R.id.action_homeFragment_to_itemDetailFragment, bundle)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = HomeFragmentBinding.inflate(layoutInflater, container, false)
         return binding.root
 
@@ -40,31 +49,16 @@ class HomeFragment : Fragment() {
         init()
     }
 
-    private fun init(){
+    private fun init() {
+        mAuth = FirebaseAuth.getInstance()
         val viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-        viewModel.initDatabase()
+        mAuth.currentUser?.let { viewModel.initDatabase(it.uid) }
         recyclerView = binding.rvProduct
-        val adapter: ProductAdapter? = context?.let { ProductAdapter(it) }
+        adapter = ProductAdapter()
         recyclerView.adapter = adapter
-        viewModel.getAppProduct().observe(viewLifecycleOwner,{listProduct ->
-            adapter?.setList(listProduct.asReversed())
+        viewModel.getAllProduct().observe(viewLifecycleOwner, { listProduct ->
+            adapter.setList(listProduct.asReversed())
         })
-
-       // if (isOnline(APP)){
-        //    Log.e("online","est'")
-       // }
-       // else
-       //     Log.e("online","net")
-
-    }
-
-    companion object{
-        fun clickProduct(product: Product){
-            val bundle = Bundle()
-            bundle.putSerializable("product",product)
-            APP.navController.navigate(R.id.action_homeFragment_to_itemDetailFragment, bundle)
-
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
