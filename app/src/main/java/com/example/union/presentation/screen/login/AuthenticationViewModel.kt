@@ -1,14 +1,17 @@
 package com.example.union.presentation.screen.login
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.auth.AuthenticationUseCase
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.withContext
 
-class AuthenticationViewModel(application: Application) : AndroidViewModel(application) {
+class AuthenticationViewModel : ViewModel() {
+
+    private val authenticationUseCase = AuthenticationUseCase()
+
+    @ExperimentalCoroutinesApi
+    suspend fun logIn(email: String, password: String): Boolean =
+        authenticationUseCase.logIn(email, password)
 
 }

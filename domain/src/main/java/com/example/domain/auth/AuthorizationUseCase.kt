@@ -6,6 +6,9 @@ import com.example.domain.models.UserDomain
 import com.example.domain.models.UserWithUID
 import com.example.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resumeWithException
 
 class AuthorizationUseCase(private val userRepository: UserRepository) {
 
@@ -13,28 +16,29 @@ class AuthorizationUseCase(private val userRepository: UserRepository) {
     private lateinit var saveUserUseCase: SaveUserUseCase
 
 
-    fun execute(userDomain: UserDomain, context: Context) {
+    @ExperimentalCoroutinesApi
+    suspend fun execute(userDomain: UserDomain): Boolean {
         mAuth = FirebaseAuth.getInstance()
         saveUserUseCase = SaveUserUseCase()
-        mAuth.createUserWithEmailAndPassword(userDomain.email, userDomain.password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val userWithUID: UserWithUID = UserWithUID(
-                        userId = mAuth.currentUser?.uid.toString(),
-                        email = userDomain.email,
-                        firstName = userDomain.firstName,
-                        lastName = userDomain.lastName,
-                        password = userDomain.password
-                    )
-                    Toast.makeText(context, "Вы были успешно зарегистрированы.", Toast.LENGTH_LONG)
-                        .show()
-                    saveUserUseCase.insert(userRepository = userRepository, userWithUID = userWithUID){}
-                } else
-                    Toast.makeText(
-                        context,
-                        "Пользователь с такой почтой уже зарегистрирован.",
-                        Toast.LENGTH_LONG
-                    ).show()
-            }
+        val result: Boolean = suspendCancellableCoroutine { continuation ->
+            mAuth.createUserWithEmailAndPassword(userDomain.email, userDomain.password)
+                .addOnCompleteListener() { task ->
+                    if (task.isSuccessful) {
+                        val userWithUID = UserWithUID(
+                            userId = mAuth.currentUser?.uid.toString(),
+                            email = userDomain.email,
+                            firstName = userDomain.firstName,
+                            lastName = userDomain.lastName,
+                            password = userDomain.password
+                        )
+                        saveUserUseCase.insert(
+                            userRepository = userRepository,
+                            userWithUID = userWithUID
+                        ) {}
+                    }
+                    continuation.resume(task.isSuccessful) {}
+                }
+        }
+        return result
     }
 }

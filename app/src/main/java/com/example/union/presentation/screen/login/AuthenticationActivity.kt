@@ -14,12 +14,13 @@ import com.example.union.presentation.MainActivity
 import com.example.union.presentation.screen.register.AuthorizationActivity
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class AuthenticationActivity : AppCompatActivity() {
 
-    lateinit var binding: AuthenticationBinding
+    private lateinit var binding: AuthenticationBinding
     lateinit var viewModel: AuthenticationViewModel
     lateinit var authenticationUseCase: AuthenticationUseCase
     lateinit var mAuth: FirebaseAuth
@@ -29,14 +30,15 @@ class AuthenticationActivity : AppCompatActivity() {
         binding = AuthenticationBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        viewModel = ViewModelProvider(this).get(AuthenticationViewModel::class.java)
+        viewModel = ViewModelProvider(this)[AuthenticationViewModel::class.java]
 
         authenticationUseCase = AuthenticationUseCase()
         init()
     }
 
-    @SuppressLint("ShowToast")
     private fun init() {
+        mAuth = FirebaseAuth.getInstance()
+        mAuth.signOut()
         binding.run {
             signUp.setOnClickListener {
                 signUp()
@@ -48,8 +50,8 @@ class AuthenticationActivity : AppCompatActivity() {
         }
     }
 
+    @ExperimentalCoroutinesApi
     private fun logIn() {
-        mAuth = FirebaseAuth.getInstance()
         binding.run {
             if (edEmailAddress.text.toString().isEmpty() || edPassword.text.toString()
                     .isEmpty()
@@ -60,15 +62,15 @@ class AuthenticationActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             else {
-                mAuth.signInWithEmailAndPassword(
-                    edEmailAddress.text.toString(),
-                    edPassword.text.toString()
-                ).addOnCompleteListener(this@AuthenticationActivity) { task ->
-                    if (task.isSuccessful) {
+                lifecycleScope.launch {
+                    if (viewModel.logIn(
+                            edEmailAddress.text.toString(),
+                            edPassword.text.toString()
+                        )) {
                         val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()
-                   } else {
+                    } else {
                         Toast.makeText(
                             this@AuthenticationActivity,
                             "Неверное имя пользователя или пароль.",
