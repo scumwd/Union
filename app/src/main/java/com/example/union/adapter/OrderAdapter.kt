@@ -44,6 +44,7 @@ class OrderAdapter : RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
         Glide
             .with(APP)
             .load(listProduct[position].productPhoto)
+            .error(R.drawable.ic_empty_photo)
             .dontAnimate()
             .into(holder.itemView.iv_productPhoto)
     }

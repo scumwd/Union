@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "order_table", primaryKeys = ["productId", "userId"])
 class OrderData(
-    var productId: Int = 0,
+    var productId: String = "",
 
     var userId: String,
 

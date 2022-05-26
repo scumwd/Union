@@ -22,7 +22,6 @@ class AuthorizationViewModel(application: Application) : AndroidViewModel(applic
         val daoUser = UserStorageImpl.getInstance(context).getUserDao()
         val userRepository: UserRepository = UserRepositoryImpl(daoUser)
         authorizationUseCase = AuthorizationUseCase(userRepository)
-
         return authorizationUseCase.execute(user)
 
 

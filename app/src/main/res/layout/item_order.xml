@@ -23,7 +23,7 @@
             android:layout_marginStart="28dp"
             android:text="Вы берете: 100"
             android:textColor="@color/white"
-            android:textSize="5pt"
+            android:textSize="4pt"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/cardView"

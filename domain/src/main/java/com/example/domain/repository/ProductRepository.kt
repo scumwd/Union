@@ -5,6 +5,7 @@ import com.example.domain.models.ProductDomain
 
 interface ProductRepository {
     val allProductDomain: LiveData<List<ProductDomain>>
+    fun getListProduct(productLink: String): LiveData<ProductDomain?>
     suspend fun insertProduct(productDomain: ProductDomain, onSuccess: () -> Unit)
     suspend fun deleteProduct(productDomain: ProductDomain, onSuccess: () -> Unit)
     suspend fun updateProduct(productDomain: ProductDomain, onSuccess: () -> Unit)

@@ -22,8 +22,6 @@ class AuthenticationActivity : AppCompatActivity() {
 
     private lateinit var binding: AuthenticationBinding
     lateinit var viewModel: AuthenticationViewModel
-    lateinit var authenticationUseCase: AuthenticationUseCase
-    lateinit var mAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,20 +30,23 @@ class AuthenticationActivity : AppCompatActivity() {
         setContentView(view)
         viewModel = ViewModelProvider(this)[AuthenticationViewModel::class.java]
 
-        authenticationUseCase = AuthenticationUseCase()
         init()
     }
 
     private fun init() {
-        mAuth = FirebaseAuth.getInstance()
-        mAuth.signOut()
-        binding.run {
-            signUp.setOnClickListener {
-                signUp()
-            }
+        if (viewModel.checkCurrentUser()) {
+            val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        } else {
+            binding.run {
+                signUp.setOnClickListener {
+                    signUp()
+                }
 
-            logIn.setOnClickListener {
-                logIn()
+                logIn.setOnClickListener {
+                    logIn()
+                }
             }
         }
     }
@@ -66,7 +67,8 @@ class AuthenticationActivity : AppCompatActivity() {
                     if (viewModel.logIn(
                             edEmailAddress.text.toString(),
                             edPassword.text.toString()
-                        )) {
+                        )
+                    ) {
                         val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()

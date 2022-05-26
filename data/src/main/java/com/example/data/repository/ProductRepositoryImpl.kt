@@ -25,6 +25,25 @@ class ProductRepositoryImpl(private val productDao: ProductDao) : ProductReposit
             }
         }
 
+    override fun getListProduct(productLink: String): LiveData<ProductDomain?> {
+        val productDb: LiveData<ProductData?> = productDao.getProduct(productLink = productLink)
+        val productDomain: LiveData<ProductDomain?> = productDb?.map {
+            productDb.value?.let { it1 ->
+                ProductDomain(
+                    productID = it1.productId,
+                    productLink = it1.productLink,
+                    productPhoto = it1.productPhoto,
+                    productPrice = it1.productPrice,
+                    productName = it1.productName,
+                    amount = it1.amount,
+                    totalAmount = it1.totalAmount,
+                    city = it1.productCity
+                )
+            }
+        }
+        return productDomain
+    }
+
     override suspend fun insertProduct(productDomain: ProductDomain, onSuccess: () -> Unit) {
         val productDb = ProductData(
             productName = productDomain.productName,

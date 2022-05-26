@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-android-extensions'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -44,6 +45,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation project(path: ':domain')
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
+    implementation 'com.google.firebase:firebase-database-ktx:20.0.5'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
 

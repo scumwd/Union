@@ -1,14 +1,11 @@
 package com.example.domain.auth
 
-import android.content.Context
-import android.widget.Toast
 import com.example.domain.models.UserDomain
 import com.example.domain.models.UserWithUID
 import com.example.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resumeWithException
 
 class AuthorizationUseCase(private val userRepository: UserRepository) {
 

@@ -20,4 +20,7 @@ interface ProductDao: OrderDao{
 
     @Query("SELECT * from product_table")
     fun getAllProduct(): LiveData<List<ProductData>>
+
+    @Query("SELECT * from product_table where productLink = :productLink")
+    fun getProduct(productLink: String): LiveData<ProductData?>
 }

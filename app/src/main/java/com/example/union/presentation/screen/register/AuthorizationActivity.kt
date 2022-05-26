@@ -3,6 +3,8 @@ package com.example.union.presentation.screen.register
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Patterns
+import android.util.Patterns.EMAIL_ADDRESS
 import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
@@ -35,39 +37,52 @@ class AuthorizationActivity : AppCompatActivity() {
     private fun init() {
         binding.run {
             signUp.setOnClickListener {
-                if (!(edEmailAddress.text.toString().isEmpty() && edFirstName.text.toString()
-                        .isEmpty() && edLastName.text.toString()
-                        .isEmpty() && edPassword.text.toString()
-                        .isEmpty())
-                ) lifecycleScope.launch {
-                    if (viewModel.addUser(getUser())) {
-                        Toast.makeText(
-                            applicationContext,
-                            "Вы были успешно зарегистрированы.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    } else
-                        Toast.makeText(
-                            applicationContext,
-                            "Пользователь с такой почтой уже зарегистрирован.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                } else
-                    Toast.makeText(
-                        applicationContext,
-                        "Пожалуйста, заполните все поля.",
-                        Toast.LENGTH_LONG
-                    ).show()
+                signUp()
             }
 
             logIn.setOnClickListener {
-                val intent = Intent(this@AuthorizationActivity, AuthenticationActivity::class.java)
-                startActivity(intent)
-                finish()
+                logIn()
             }
         }
+    }
 
+    private fun logIn(){
+        val intent = Intent(this@AuthorizationActivity, AuthenticationActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 
+    private fun signUp(){
+        if (!(edEmailAddress.text.toString().isEmpty() && edFirstName.text.toString()
+                .isEmpty() && edLastName.text.toString()
+                .isEmpty() && edPassword.text.toString()
+                .isEmpty())
+        ) lifecycleScope.launch {
+            if (viewModel.addUser(getUser())) {
+                Toast.makeText(
+                    applicationContext,
+                    "Вы были успешно зарегистрированы.",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else
+                if (EMAIL_ADDRESS.matcher(edEmailAddress.text.toString()).matches())
+                    Toast.makeText(
+                        applicationContext,
+                        "Пользователь с такой почтой уже зарегистрирован.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                else
+                    Toast.makeText(
+                        applicationContext,
+                        "Введенная почта некорректна.",
+                        Toast.LENGTH_LONG
+                    ).show()
+        } else
+            Toast.makeText(
+                applicationContext,
+                "Пожалуйста, заполните все поля.",
+                Toast.LENGTH_LONG
+            ).show()
     }
 
     private fun getUser(): UserDomain {

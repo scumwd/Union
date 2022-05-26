@@ -35,6 +35,7 @@ class ProductAdapter : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() 
         Glide
             .with(APP)
             .load(listProduct[position].productPhoto)
+            .error(R.drawable.ic_empty_photo)
             .dontAnimate()
             .into(holder.itemView.iv_productPhoto)
 
@@ -46,7 +47,12 @@ class ProductAdapter : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() 
 
     @SuppressLint("NotifyDataSetChanged")
     fun setList(list: List<ProductDomain>) {
-        listProduct = list
+        var localList = mutableListOf<ProductDomain>()
+        list.forEach { listProduct->
+            if(listProduct.amount > listProduct.totalAmount)
+                localList.add(listProduct)
+        }
+        listProduct = localList
         notifyDataSetChanged()
     }
 

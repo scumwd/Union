@@ -1,13 +1,16 @@
 package com.example.union.presentation.screen.ItemDetail
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
@@ -15,6 +18,7 @@ import com.example.union.R
 import com.example.union.databinding.ItemDetailFragmentBinding
 import com.example.union.presentation.APP
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.*
 
 class ItemDetailFragment : Fragment() {
 
@@ -39,18 +43,21 @@ class ItemDetailFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun init() {
-        viewModel = ViewModelProvider(this).get(ItemDetailViewModel::class.java)
+        viewModel = ViewModelProvider(this)[ItemDetailViewModel::class.java]
         binding.run {
 
             displayProduct()
+
+            tvLink.setOnClickListener {
+                goToLink()
+            }
 
             btnBack.setOnClickListener {
                 navigateToHomeFragment()
             }
 
             btnBuy.setOnClickListener {
-                insertOrderIntoDb()
-                updateProductIntoDb()
+                buyProduct()
             }
 
             btnMinus.setOnClickListener {
@@ -61,6 +68,36 @@ class ItemDetailFragment : Fragment() {
                 addTotalAmount()
             }
         }
+    }
+
+    private fun goToLink() {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(currentProductDomain.productLink))
+        startActivity(intent)
+    }
+
+    private fun buyProduct() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (currentProductDomain.productID?.let { viewModel.checkOrder(it) } == true) {
+                withContext(lifecycleScope.coroutineContext) {
+                    Toast.makeText(
+                        APP,
+                        "Вы уже участвуете в покупке.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } else {
+                insertOrderIntoDb()
+                updateProductIntoDb()
+                withContext(lifecycleScope.coroutineContext) {
+                    Toast.makeText(
+                        APP,
+                        "Вы успешно зарезервировали товар.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+
     }
 
     private fun updateProductIntoDb() {
@@ -85,10 +122,11 @@ class ItemDetailFragment : Fragment() {
             Glide
                 .with(APP)
                 .load(currentProductDomain.productPhoto)
+                .error(R.drawable.ic_empty_photo)
                 .into(ivProductPhoto)
             tvPrice.text = "${currentProductDomain.productPrice} $ за шт"
             tvAmount.text =
-                "Осталось: ${currentProductDomain.amount - currentProductDomain.totalAmount}"
+                "Осталось: ${currentProductDomain.amount?.minus(currentProductDomain.totalAmount)}"
             tvCity.text = "Город: ${currentProductDomain.city}"
             tvLink.text = currentProductDomain.productLink
         }
@@ -102,15 +140,14 @@ class ItemDetailFragment : Fragment() {
         mAuth = FirebaseAuth.getInstance()
         val userId = mAuth.currentUser?.uid
         val totalAmountBuy: Int = binding.edTotalAmount.text.toString().toInt()
-        if (userId != null) {
-            Log.e("user", userId)
-        }
         val orderDomain = userId?.let { it1 ->
-            OrderDomain(
-                productID = currentProductDomain.productID,
-                userId = it1,
-                totalAmount = totalAmountBuy
-            )
+            currentProductDomain.productID?.let {
+                OrderDomain(
+                    productID = it,
+                    userId = it1,
+                    totalAmount = totalAmountBuy
+                )
+            }
         }
         if (orderDomain != null) {
             viewModel.insert(orderDomain) {}

@@ -14,4 +14,7 @@ interface OrderDao {
 
     @Query("SELECT * from order_table where userId = :userid")
     fun getOrders(userid: String): LiveData<List<OrderData>>
+
+    @Query("SELECT * from order_table where userId = :userid")
+    fun getListOrder(userid: String): List<OrderData>
 }

@@ -21,7 +21,7 @@
         <entry key="app/src/main/res/layout/item_detail_fragment.xml" value="0.51875" />
         <entry key="app/src/main/res/layout/item_order.xml" value="0.67" />
         <entry key="app/src/main/res/layout/order_detail_fragment.xml" value="0.51875" />
-        <entry key="app/src/main/res/layout/profile_fragment.xml" value="0.30520833333333336" />
+        <entry key="app/src/main/res/layout/profile_fragment.xml" value="0.67" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.51875" />
       </map>
     </option>

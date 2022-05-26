@@ -12,20 +12,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.domain.models.ProductDomain
 import com.example.union.R
 import com.example.union.adapter.ProductAdapter
+import com.example.union.cloud.ProductGetCloud
+import com.example.union.cloud.ProductInsertCloud
 import com.example.union.databinding.HomeFragmentBinding
 import com.example.union.presentation.APP
-import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
     lateinit var recyclerView: RecyclerView
     lateinit var binding: HomeFragmentBinding
     lateinit var adapter: ProductAdapter
-    lateinit var mAuth: FirebaseAuth
 
     companion object {
         fun clickProduct(productDomain: ProductDomain) {
@@ -50,15 +52,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun init() {
-        mAuth = FirebaseAuth.getInstance()
         val viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-        mAuth.currentUser?.let { viewModel.initDatabase(it.uid) }
+        viewModel.initDatabase()
         recyclerView = binding.rvProduct
         adapter = ProductAdapter()
         recyclerView.adapter = adapter
         viewModel.getAllProduct().observe(viewLifecycleOwner, { listProduct ->
             adapter.setList(listProduct.asReversed())
         })
+        val productGetCloud = ProductGetCloud()
+        productGetCloud.getAllProduct()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
