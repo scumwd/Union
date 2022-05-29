@@ -1,18 +1,9 @@
-package com.example.union.cloud
+package com.example.domain.cloud
 
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import java.util.*
-import com.google.firebase.database.DatabaseError
-import android.util.Log
-import com.example.domain.models.ProductCloudData
 import com.example.domain.models.ProductDomain
-import com.google.firebase.database.DataSnapshot
-import java.util.ArrayList
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-
+import java.util.*
 
 class ProductInsertCloud {
 

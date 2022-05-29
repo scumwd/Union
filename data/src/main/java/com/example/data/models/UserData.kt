@@ -17,7 +17,4 @@ class UserData(
 
     @ColumnInfo
     val lastName: String,
-
-    @ColumnInfo
-    val password: String
 )

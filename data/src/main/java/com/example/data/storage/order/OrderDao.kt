@@ -7,7 +7,7 @@ import com.example.data.models.OrderData
 @Dao
 interface OrderDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(orderData: OrderData)
+    fun insert(orderData: OrderData)
 
     @Delete
     suspend fun delete(orderData: OrderData)

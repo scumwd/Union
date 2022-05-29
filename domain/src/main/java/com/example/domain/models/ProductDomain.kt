@@ -2,8 +2,8 @@ package com.example.domain.models
 
 import java.io.Serializable
 
-class ProductDomain (
-    var productID:String = "",
+class ProductDomain(
+    var productID: String = "",
     val productName: String,
     val productLink: String,
     val productPrice: Int,

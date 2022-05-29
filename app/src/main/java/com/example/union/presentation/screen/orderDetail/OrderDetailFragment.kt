@@ -42,7 +42,7 @@ class OrderDetailFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(OrderDetailViewModel::class.java)
         displayOrder()
 
-        binding.tvLink.setOnClickListener{
+        binding.tvLink.setOnClickListener {
             goToLink()
         }
 
@@ -61,7 +61,7 @@ class OrderDetailFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun displayOrder(){
+    private fun displayOrder() {
         binding.run {
             tvNameProduct.text = currentProductDomain.productName
             Glide
@@ -71,11 +71,13 @@ class OrderDetailFragment : Fragment() {
                 .into(ivProductPhoto)
             tvPrice.text = "${currentProductDomain.productPrice} $ за шт"
             tvAmount.text =
-                "Осталось: ${currentProductDomain.totalAmount?.let {
-                    currentProductDomain.amount?.minus(
-                        it
-                    )
-                }}"
+                "Осталось: ${
+                    currentProductDomain.totalAmount.let {
+                        currentProductDomain.amount.minus(
+                            it
+                        )
+                    }
+                }"
             tvCity.text = "Город: ${currentProductDomain.city}"
             tvLink.text = currentProductDomain.productLink
             tvTotalAmount.text = "Вы берете: ${currentOrder.totalAmount}"

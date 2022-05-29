@@ -2,7 +2,6 @@ package com.example.data.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
 @Entity(tableName = "order_table", primaryKeys = ["productId", "userId"])
 class OrderData(

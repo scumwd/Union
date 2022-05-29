@@ -2,10 +2,12 @@ package com.example.union.presentation.screen.ItemDetail
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.example.domain.cloud.OrderInsertCloud
 import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
+import com.example.domain.save.GetOrderFromFireBase
+import com.example.domain.update.UpdateProductInFireBase
 import com.example.union.presentation.ORDER_REPOSITORY
-import com.example.union.presentation.PRODUCT_REPOSITORY
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.*
 import java.util.*
@@ -14,20 +16,24 @@ class ItemDetailViewModel(application: Application) : AndroidViewModel(applicati
 
     val context = application
     lateinit var mAuth: FirebaseAuth
+    lateinit var orderInsertCloud: OrderInsertCloud
+    lateinit var upd: UpdateProductInFireBase
+    lateinit var getOrderFromFireBase: GetOrderFromFireBase
 
-    fun insert(orderDomain: OrderDomain, onSuccess: () -> Unit) =
-        viewModelScope.launch(Dispatchers.IO) {
-            ORDER_REPOSITORY.insertOrder(orderDomain) {
-                onSuccess
-            }
-        }
+    fun insert(orderDomain: OrderDomain) {
+        orderInsertCloud = OrderInsertCloud()
+        orderInsertCloud.insert(orderDomain)
+    }
 
-    fun update(productDomain: ProductDomain, onSuccess: () -> Unit) =
-        viewModelScope.launch(Dispatchers.IO) {
-            PRODUCT_REPOSITORY.updateProduct(productDomain) {
-                onSuccess
-            }
-        }
+    fun update(productDomain: ProductDomain) {
+        upd = UpdateProductInFireBase()
+        upd.execute(productDomain)
+    }
+
+    fun getOrder() {
+        getOrderFromFireBase = GetOrderFromFireBase()
+        getOrderFromFireBase.getAllProduct(ORDER_REPOSITORY)
+    }
 
     suspend fun checkOrder(productId: String): Boolean {
         mAuth = FirebaseAuth.getInstance()
@@ -42,9 +48,7 @@ class ItemDetailViewModel(application: Application) : AndroidViewModel(applicati
                 return@forEach
             } else result = false
         }
-
         return result
-
     }
 
 }

@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
+import com.example.domain.update.UpdateProductInFireBase
 import com.example.union.R
 import com.example.union.databinding.ItemDetailFragmentBinding
 import com.example.union.presentation.APP
@@ -76,8 +77,9 @@ class ItemDetailFragment : Fragment() {
     }
 
     private fun buyProduct() {
+        viewModel.getOrder()
         lifecycleScope.launch(Dispatchers.IO) {
-            if (currentProductDomain.productID?.let { viewModel.checkOrder(it) } == true) {
+            if (currentProductDomain.productID.let { viewModel.checkOrder(it) }) {
                 withContext(lifecycleScope.coroutineContext) {
                     Toast.makeText(
                         APP,
@@ -87,7 +89,19 @@ class ItemDetailFragment : Fragment() {
                 }
             } else {
                 insertOrderIntoDb()
-                updateProductIntoDb()
+                val totalAmount =
+                    binding.edTotalAmount.text.toString().toInt() + currentProductDomain.totalAmount
+                val productDomain = ProductDomain(
+                    productID = currentProductDomain.productID,
+                    productName = currentProductDomain.productName,
+                    productLink = currentProductDomain.productLink,
+                    productPrice = currentProductDomain.productPrice,
+                    amount = currentProductDomain.amount,
+                    totalAmount = totalAmount,
+                    city = currentProductDomain.city,
+                    productPhoto = currentProductDomain.productPhoto
+                )
+                viewModel.update(productDomain)
                 withContext(lifecycleScope.coroutineContext) {
                     Toast.makeText(
                         APP,
@@ -97,22 +111,6 @@ class ItemDetailFragment : Fragment() {
                 }
             }
         }
-
-    }
-
-    private fun updateProductIntoDb() {
-        val totalAmount = binding.edTotalAmount.text.toString().toInt()
-        val productDomain = ProductDomain(
-            productID = currentProductDomain.productID,
-            productName = currentProductDomain.productName,
-            productLink = currentProductDomain.productLink,
-            productPrice = currentProductDomain.productPrice,
-            amount = currentProductDomain.amount,
-            totalAmount = totalAmount,
-            city = currentProductDomain.city,
-            productPhoto = currentProductDomain.productPhoto
-        )
-        viewModel.update(productDomain) {}
     }
 
     @SuppressLint("SetTextI18n")
@@ -126,7 +124,7 @@ class ItemDetailFragment : Fragment() {
                 .into(ivProductPhoto)
             tvPrice.text = "${currentProductDomain.productPrice} $ за шт"
             tvAmount.text =
-                "Осталось: ${currentProductDomain.amount?.minus(currentProductDomain.totalAmount)}"
+                "Осталось: ${currentProductDomain.amount.minus(currentProductDomain.totalAmount)}"
             tvCity.text = "Город: ${currentProductDomain.city}"
             tvLink.text = currentProductDomain.productLink
         }
@@ -141,7 +139,7 @@ class ItemDetailFragment : Fragment() {
         val userId = mAuth.currentUser?.uid
         val totalAmountBuy: Int = binding.edTotalAmount.text.toString().toInt()
         val orderDomain = userId?.let { it1 ->
-            currentProductDomain.productID?.let {
+            currentProductDomain.productID.let {
                 OrderDomain(
                     productID = it,
                     userId = it1,
@@ -150,7 +148,7 @@ class ItemDetailFragment : Fragment() {
             }
         }
         if (orderDomain != null) {
-            viewModel.insert(orderDomain) {}
+            viewModel.insert(orderDomain)
         }
     }
 

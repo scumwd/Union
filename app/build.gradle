@@ -4,7 +4,6 @@ plugins {
     id 'com.google.gms.google-services'
     id 'kotlin-kapt'
     id 'kotlin-android-extensions'
-    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -42,10 +41,9 @@ android {
 }
 
 dependencies {
-    implementation "com.google.dagger:hilt-android:2.38.1"
     implementation 'com.google.firebase:firebase-database-ktx:20.0.5'
     implementation 'com.google.firebase:firebase-firestore-ktx:24.1.2'
-    kapt "com.google.dagger:hilt-compiler:2.38.1"
+    implementation 'com.google.firebase:firebase-storage-ktx:20.0.1'
 
     def fragment_version = "1.4.1"
     implementation "androidx.fragment:fragment-ktx:$fragment_version"
@@ -73,6 +71,11 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'
+
+    //Dagger
+    implementation 'com.google.dagger:dagger:2.40.1'
+    kapt 'com.google.dagger:dagger-compiler:2.40.1'
+    implementation 'javax.inject:javax.inject:1'
 
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'

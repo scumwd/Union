@@ -1,11 +1,16 @@
 package com.example.domain.repository
 
 import androidx.lifecycle.LiveData
+import com.example.domain.models.OrderCloudData
 import com.example.domain.models.OrderDomain
 
 interface OrderRepository {
+
     val allOrderDomain: LiveData<List<OrderDomain>>
+
     suspend fun getListOrder(): List<OrderDomain>
-    suspend fun insertOrder(orderDomain: OrderDomain, onSuccess: () -> Unit)
+
+    fun insertOrder(listCloud: MutableList<OrderCloudData?>, onSuccess: () -> Unit)
+
     suspend fun deleteOrder(orderDomain: OrderDomain, onSuccess: () -> Unit)
 }

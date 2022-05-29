@@ -3,7 +3,6 @@ package com.example.union.presentation.screen.register
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Patterns
 import android.util.Patterns.EMAIL_ADDRESS
 import android.widget.EditText
 import android.widget.Toast
@@ -46,13 +45,13 @@ class AuthorizationActivity : AppCompatActivity() {
         }
     }
 
-    private fun logIn(){
+    private fun logIn() {
         val intent = Intent(this@AuthorizationActivity, AuthenticationActivity::class.java)
         startActivity(intent)
         finish()
     }
 
-    private fun signUp(){
+    private fun signUp() {
         if (!(edEmailAddress.text.toString().isEmpty() && edFirstName.text.toString()
                 .isEmpty() && edLastName.text.toString()
                 .isEmpty() && edPassword.text.toString()

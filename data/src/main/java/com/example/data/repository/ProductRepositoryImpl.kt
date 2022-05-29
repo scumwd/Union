@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.example.data.models.ProductData
 import com.example.data.storage.product.ProductDao
+import com.example.domain.models.ProductCloudData
 import com.example.domain.models.ProductDomain
 import com.example.domain.repository.ProductRepository
 
@@ -25,35 +26,46 @@ class ProductRepositoryImpl(private val productDao: ProductDao) : ProductReposit
             }
         }
 
-    override fun getListProduct(productLink: String): LiveData<ProductDomain?> {
-        val productDb: LiveData<ProductData?> = productDao.getProduct(productLink = productLink)
-        val productDomain: LiveData<ProductDomain?> = productDb?.map {
-            productDb.value?.let { it1 ->
-                ProductDomain(
-                    productID = it1.productId,
-                    productLink = it1.productLink,
-                    productPhoto = it1.productPhoto,
-                    productPrice = it1.productPrice,
-                    productName = it1.productName,
-                    amount = it1.amount,
-                    totalAmount = it1.totalAmount,
-                    city = it1.productCity
-                )
-            }
+    override fun getListProduct(productLink: String): ProductDomain? {
+        val productDb: ProductData? = productDao.getProduct(productLink = productLink)
+        val productDomain: ProductDomain?
+        if (productDb?.productCity == null) {
+            productDomain = null
+        } else {
+            productDomain = ProductDomain(
+                productID = productDb.productId,
+                productLink = productDb.productLink,
+                productPhoto = productDb.productPhoto,
+                productPrice = productDb.productPrice,
+                productName = productDb.productName,
+                amount = productDb.amount,
+                totalAmount = productDb.totalAmount,
+                city = productDb.productCity
+            )
         }
+
         return productDomain
     }
 
-    override suspend fun insertProduct(productDomain: ProductDomain, onSuccess: () -> Unit) {
-        val productDb = ProductData(
-            productName = productDomain.productName,
-            productCity = productDomain.city,
-            productLink = productDomain.productLink,
-            productPrice = productDomain.productPrice,
-            amount = productDomain.amount,
-            productPhoto = productDomain.productPhoto
-        )
-        productDao.insert(productData = productDb)
+    override fun insertProduct(listCloud: MutableList<ProductCloudData?>, onSuccess: () -> Unit) {
+        var listRoom: List<ProductData> = mutableListOf()
+        listCloud.forEach { cloud ->
+            val productData = ProductData(
+                productId = cloud?.getProductId().toString(),
+                productName = cloud?.getProductName().toString(),
+                productLink = cloud?.getProductLink().toString(),
+                productPrice = cloud?.getProductPrice().toString().toInt(),
+                productCity = cloud?.getCity().toString(),
+                productPhoto = cloud?.getProductPhoto().toString(),
+                amount = cloud?.getAmount().toString().toInt(),
+                totalAmount = cloud?.getTotalAmount().toString().toInt()
+            )
+            listRoom = listRoom + productData
+        }
+        listRoom.forEach {
+            productDao.insert(productData = it)
+        }
+
         onSuccess()
     }
 
@@ -72,19 +84,24 @@ class ProductRepositoryImpl(private val productDao: ProductDao) : ProductReposit
         onSuccess()
     }
 
-    override suspend fun updateProduct(productDomain: ProductDomain, onSuccess: () -> Unit) {
-        val productDb = ProductData(
-            productName = productDomain.productName,
-            productCity = productDomain.city,
-            productLink = productDomain.productLink,
-            productPrice = productDomain.productPrice,
-            amount = productDomain.amount,
-            totalAmount = productDomain.totalAmount,
-            productPhoto = productDomain.productPhoto,
-            productId = productDomain.productID
-
-        )
-        productDao.update(productDb)
+    override fun updateProduct(listCloud: MutableList<ProductCloudData?>, onSuccess: () -> Unit) {
+        var listRoom: List<ProductData> = mutableListOf()
+        listCloud.forEach { cloud ->
+            val productData = ProductData(
+                productId = cloud?.getProductId().toString(),
+                productName = cloud?.getProductName().toString(),
+                productLink = cloud?.getProductLink().toString(),
+                productPrice = cloud?.getProductPrice().toString().toInt(),
+                productCity = cloud?.getCity().toString(),
+                productPhoto = cloud?.getProductPhoto().toString(),
+                amount = cloud?.getAmount().toString().toInt(),
+                totalAmount = cloud?.getTotalAmount().toString().toInt()
+            )
+            listRoom = listRoom + productData
+        }
+        listRoom.forEach {
+            productDao.update(productData = it)
+        }
         onSuccess()
     }
 }

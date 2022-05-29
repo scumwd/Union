@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.example.data.models.OrderData
 import com.example.data.storage.order.OrderDao
-import com.example.data.storage.product.ProductDao
+import com.example.domain.models.OrderCloudData
 import com.example.domain.models.OrderDomain
 import com.example.domain.repository.OrderRepository
 
@@ -32,13 +32,20 @@ class OrderRepositoryImpl(private val orderDao: OrderDao, private val userId: St
             }
         }
 
-    override suspend fun insertOrder(orderDomain: OrderDomain, onSuccess: () -> Unit) {
-        val orderDb = OrderData(
-            productId = orderDomain.productID,
-            userId = orderDomain.userId,
-            totalAmount = orderDomain.totalAmount
-        )
-        orderDao.insert(orderDb)
+    override fun insertOrder(listCloud: MutableList<OrderCloudData?>, onSuccess: () -> Unit) {
+        var listRoom: List<OrderData> = mutableListOf()
+        listCloud.forEach { cloud ->
+            val orderData = OrderData(
+                productId = cloud?.getProductId().toString(),
+                userId = cloud?.getUserId().toString(),
+                totalAmount = cloud?.getTotalAmount().toString().toInt()
+            )
+            listRoom = listRoom + orderData
+        }
+        listRoom.forEach {
+            orderDao.insert(it)
+        }
+
         onSuccess()
     }
 

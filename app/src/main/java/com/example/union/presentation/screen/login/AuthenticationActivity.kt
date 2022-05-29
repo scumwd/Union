@@ -1,22 +1,15 @@
 package com.example.union.presentation.screen.login
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.example.domain.auth.AuthenticationUseCase
 import com.example.union.databinding.AuthenticationBinding
 import com.example.union.presentation.MainActivity
 import com.example.union.presentation.screen.register.AuthorizationActivity
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class AuthenticationActivity : AppCompatActivity() {
 
@@ -34,6 +27,7 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     private fun init() {
+
         if (viewModel.checkCurrentUser()) {
             val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
             startActivity(intent)
@@ -69,15 +63,18 @@ class AuthenticationActivity : AppCompatActivity() {
                             edPassword.text.toString()
                         )
                     ) {
+                        viewModel.getUserFromFireBase()
                         val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()
                     } else {
-                        Toast.makeText(
-                            this@AuthenticationActivity,
-                            "Неверное имя пользователя или пароль.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        withContext(lifecycleScope.coroutineContext) {
+                            Toast.makeText(
+                                this@AuthenticationActivity,
+                                "Неверное имя пользователя или пароль.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             }
