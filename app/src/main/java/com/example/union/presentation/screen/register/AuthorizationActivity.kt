@@ -10,14 +10,20 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.domain.models.UserDomain
 import com.example.union.R
+import com.example.union.app.App
 import com.example.union.databinding.AuthorizationBinding
+import com.example.union.presentation.APP
 import com.example.union.presentation.screen.login.AuthenticationActivity
 import kotlinx.android.synthetic.main.authorization.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 class AuthorizationActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var viewModelFactory: AuthorizationViewModelFactory
 
     lateinit var binding: AuthorizationBinding
     lateinit var viewModel: AuthorizationViewModel
@@ -28,12 +34,15 @@ class AuthorizationActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        viewModel = ViewModelProvider(this)[AuthorizationViewModel::class.java]
+        (applicationContext as App).appComponent.inject(this)
+
         init()
     }
 
     @ExperimentalCoroutinesApi
     private fun init() {
+        viewModel = ViewModelProvider(this,viewModelFactory)[AuthorizationViewModel::class.java]
+
         binding.run {
             signUp.setOnClickListener {
                 signUp()
@@ -51,37 +60,41 @@ class AuthorizationActivity : AppCompatActivity() {
         finish()
     }
 
+    @ExperimentalCoroutinesApi
     private fun signUp() {
-        if (!(edEmailAddress.text.toString().isEmpty() && edFirstName.text.toString()
-                .isEmpty() && edLastName.text.toString()
-                .isEmpty() && edPassword.text.toString()
-                .isEmpty())
-        ) lifecycleScope.launch {
-            if (viewModel.addUser(getUser())) {
+        binding.run {
+            if (!(edEmailAddress.text.toString().isEmpty() && edFirstName.text.toString()
+                    .isEmpty() && edLastName.text.toString()
+                    .isEmpty() && edPassword.text.toString()
+                    .isEmpty())
+            ) lifecycleScope.launch {
+                if (viewModel.addUser(getUser())) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Вы были успешно зарегистрированы.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else
+                    if (EMAIL_ADDRESS.matcher(edEmailAddress.text.toString()).matches())
+                        Toast.makeText(
+                            applicationContext,
+                            "Пользователь с такой почтой уже зарегистрирован.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    else
+                        Toast.makeText(
+                            applicationContext,
+                            "Введенная почта некорректна.",
+                            Toast.LENGTH_LONG
+                        ).show()
+            } else
                 Toast.makeText(
                     applicationContext,
-                    "Вы были успешно зарегистрированы.",
+                    "Пожалуйста, заполните все поля.",
                     Toast.LENGTH_LONG
                 ).show()
-            } else
-                if (EMAIL_ADDRESS.matcher(edEmailAddress.text.toString()).matches())
-                    Toast.makeText(
-                        applicationContext,
-                        "Пользователь с такой почтой уже зарегистрирован.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                else
-                    Toast.makeText(
-                        applicationContext,
-                        "Введенная почта некорректна.",
-                        Toast.LENGTH_LONG
-                    ).show()
-        } else
-            Toast.makeText(
-                applicationContext,
-                "Пожалуйста, заполните все поля.",
-                Toast.LENGTH_LONG
-            ).show()
+        }
+
     }
 
     private fun getUser(): UserDomain {

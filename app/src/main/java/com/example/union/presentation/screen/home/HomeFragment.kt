@@ -10,10 +10,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.domain.models.ProductDomain
 import com.example.union.R
 import com.example.union.adapter.ProductAdapter
+import com.example.union.app.App
 import com.example.union.databinding.HomeFragmentBinding
 import com.example.union.presentation.APP
+import javax.inject.Inject
 
 class HomeFragment : Fragment() {
+
+    @Inject
+    lateinit var viewModelFactory: HomeViewModelFactory
 
     lateinit var recyclerView: RecyclerView
     lateinit var binding: HomeFragmentBinding
@@ -38,12 +43,14 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (APP.applicationContext as App).appComponent.inject(this)
+
         init()
     }
 
     private fun init() {
-        val viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-        viewModel.initDatabase()
+        val viewModel = ViewModelProvider(this,viewModelFactory).get(HomeViewModel::class.java)
         viewModel.getProductsFromFireBase()
         recyclerView = binding.rvProduct
         adapter = ProductAdapter()

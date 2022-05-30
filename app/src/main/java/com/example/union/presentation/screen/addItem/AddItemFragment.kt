@@ -29,16 +29,20 @@ import android.app.Dialog
 import androidx.lifecycle.lifecycleScope
 import com.example.union.R
 import com.example.union.R.*
+import com.example.union.app.App
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import javax.inject.Inject
 
 
 class AddItemFragment : Fragment() {
 
+    @Inject
+    lateinit var viewModelFactory: AddItemViewModelFactory
+
     lateinit var binding: AddItemFragmentBinding
     private lateinit var viewModel: AddItemViewModel
     private lateinit var ivProductPhoto: ImageView
-    private lateinit var mStorageReference: StorageReference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,19 +54,22 @@ class AddItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (APP.applicationContext as App).appComponent.inject(this)
+
         init()
     }
 
     private fun init() {
-        mStorageReference = FirebaseStorage.getInstance().getReference("ProductImage")
         ivProductPhoto = binding.ivProductPhoto
-        viewModel = ViewModelProvider(this).get(AddItemViewModel::class.java)
+        viewModel = ViewModelProvider(this, viewModelFactory)[AddItemViewModel::class.java]
 
         binding.edProductPhoto.setOnClickListener {
             getImage()
         }
 
         binding.btnSend.setOnClickListener {
+            viewModel.getProductsFromFireBase()
             checkFields()
         }
     }
@@ -96,7 +103,6 @@ class AddItemFragment : Fragment() {
 
         if (ivProductPhoto.drawable != null) {
             if (linkProduct != null && Patterns.WEB_URL.matcher(linkProduct.toString()).matches()) {
-                viewModel.getProductsFromFireBase()
                 val listProduct = viewModel.chekProduct(linkProduct.toString())
                 if (listProduct != null && listProduct.city == binding.edProductCity.text.toString()) {
                     Toast.makeText(
@@ -113,7 +119,6 @@ class AddItemFragment : Fragment() {
                         R.id.action_addItemFragment_to_itemDetailFragment,
                         bundle
                     )
-
                 } else {
                     binding.run {
                         if (edProductName.text.toString().isEmpty()
@@ -131,21 +136,7 @@ class AddItemFragment : Fragment() {
                         else {
                             lifecycleScope.launch {
                                 pd.show()
-                                val bitMap =
-                                    (ivProductPhoto.drawable as BitmapDrawable).bitmap
-                                val baos = ByteArrayOutputStream()
-                                bitMap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-                                val byteArray = baos.toByteArray()
-                                val mRef = mStorageReference.child(
-                                    UUID.randomUUID().toString()
-                                )
-                                val up = mRef.putBytes(byteArray)
-                                val productPhoto: String = suspendCancellableCoroutine {
-                                    val task = up.continueWithTask { mRef.downloadUrl }
-                                        .addOnCompleteListener { task ->
-                                            it.resume(task.result.toString()) {}
-                                        }
-                                }
+                                val productPhoto = viewModel.uploadImage(ivProductPhoto)
                                 val productName = edProductName.text.toString()
                                 val productLink = edProductLink.text.toString()
                                 val productAmount =
@@ -164,7 +155,6 @@ class AddItemFragment : Fragment() {
                                 pd.hide()
                             }
                         }
-
                     }
                 }
 
@@ -199,6 +189,7 @@ class AddItemFragment : Fragment() {
             amount = productAmount
         )
         viewModel.insertInFireBase(productDomain)
+        viewModel.getProductsFromFireBase()
         Toast.makeText(
             APP,
             "Товар опубликован успешно.",

@@ -16,12 +16,17 @@ import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
 import com.example.domain.update.UpdateProductInFireBase
 import com.example.union.R
+import com.example.union.app.App
 import com.example.union.databinding.ItemDetailFragmentBinding
 import com.example.union.presentation.APP
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
 class ItemDetailFragment : Fragment() {
+
+    @Inject
+    lateinit var viewModelFactory: ItemDetailViewModelFactory
 
     lateinit var binding: ItemDetailFragmentBinding
     lateinit var currentProductDomain: ProductDomain
@@ -39,12 +44,15 @@ class ItemDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (APP.applicationContext as App).appComponent.inject(this)
+
         init()
     }
 
     @SuppressLint("SetTextI18n")
     private fun init() {
-        viewModel = ViewModelProvider(this)[ItemDetailViewModel::class.java]
+        viewModel = ViewModelProvider(this,viewModelFactory)[ItemDetailViewModel::class.java]
         binding.run {
 
             displayProduct()

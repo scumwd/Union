@@ -9,11 +9,11 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.util.ArrayList
 
-class GetProductFromFireBase {
+class GetProductFromFireBase(private val productRepository: ProductRepository) {
 
     private val PRODUCT_KEY: String = "Products"
 
-    fun getAllProduct(productRepository: ProductRepository) {
+    fun getAllProduct() {
         val rootRef = FirebaseDatabase.getInstance().reference
         val messageRef = rootRef.child(PRODUCT_KEY)
         val valueEventListener: ValueEventListener = object : ValueEventListener {

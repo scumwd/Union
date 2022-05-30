@@ -8,10 +8,10 @@ import com.example.domain.models.OrderCloudData
 import com.example.domain.models.OrderDomain
 import com.example.domain.repository.OrderRepository
 
-class OrderRepositoryImpl(private val orderDao: OrderDao, private val userId: String) :
+class OrderRepositoryImpl(private val orderDao: OrderDao) :
     OrderRepository {
 
-    override suspend fun getListOrder(): List<OrderDomain> {
+    override suspend fun getListOrder(userId: String): List<OrderDomain> {
         return orderDao.getListOrder(userId).map { orderLocal ->
             OrderDomain(
                 productID = orderLocal.productId,
@@ -21,8 +21,8 @@ class OrderRepositoryImpl(private val orderDao: OrderDao, private val userId: St
         }
     }
 
-    override val allOrderDomain: LiveData<List<OrderDomain>>
-        get() = orderDao.getOrders(userId).map { list ->
+    override fun allOrderDomain(userId: String): LiveData<List<OrderDomain>> =
+        orderDao.getOrders(userId).map { list ->
             list.map { orderLocal ->
                 OrderDomain(
                     productID = orderLocal.productId,

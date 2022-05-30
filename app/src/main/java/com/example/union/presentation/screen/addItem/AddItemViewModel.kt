@@ -1,36 +1,38 @@
 package com.example.union.presentation.screen.addItem
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.widget.ImageView
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.repository.ProductRepositoryImpl
-import com.example.data.storage.product.ProductDb
 import com.example.domain.cloud.ProductInsertCloud
+import com.example.domain.cloud.UploadProductImage
+import com.example.domain.getFromDb.CheckProductExists
 import com.example.domain.models.ProductDomain
 import com.example.domain.save.GetProductFromFireBase
 import com.example.union.presentation.PRODUCT_REPOSITORY
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AddItemViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val context = application
-    lateinit var productInsertCloud: ProductInsertCloud
-    private val getProductsFromFireBase = GetProductFromFireBase()
+class AddItemViewModel(
+    private val getProductFromFireBase: GetProductFromFireBase,
+    private val productInsertCloud: ProductInsertCloud,
+    private val uploadProductImage: UploadProductImage,
+    private val checkProductExists: CheckProductExists
+) : ViewModel() {
 
     fun insertInFireBase(productDomain: ProductDomain) {
-        productInsertCloud = ProductInsertCloud()
         productInsertCloud.insert(productDomain)
     }
 
+    suspend fun uploadImage(photo: ImageView): String{
+        return uploadProductImage.execute(photo)
+    }
+
     fun chekProduct(productLink: String): ProductDomain? =
-        PRODUCT_REPOSITORY.getListProduct(productLink)
+        checkProductExists.execute(productLink)
 
     fun getProductsFromFireBase() {
-        val daoProduct = ProductDb.getInstance(context).getProductDao()
-        PRODUCT_REPOSITORY = ProductRepositoryImpl(daoProduct)
         viewModelScope.launch(Dispatchers.IO) {
-            getProductsFromFireBase.getAllProduct(PRODUCT_REPOSITORY)
+            getProductFromFireBase.getAllProduct()
         }
     }
 }

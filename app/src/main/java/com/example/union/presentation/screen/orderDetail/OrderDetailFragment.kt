@@ -39,7 +39,7 @@ class OrderDetailFragment : Fragment() {
     }
 
     private fun init() {
-        viewModel = ViewModelProvider(this).get(OrderDetailViewModel::class.java)
+        viewModel = ViewModelProvider(this)[OrderDetailViewModel::class.java]
         displayOrder()
 
         binding.tvLink.setOnClickListener {

@@ -6,9 +6,9 @@ import com.example.domain.models.OrderDomain
 
 interface OrderRepository {
 
-    val allOrderDomain: LiveData<List<OrderDomain>>
+    fun allOrderDomain(userId: String): LiveData<List<OrderDomain>>
 
-    suspend fun getListOrder(): List<OrderDomain>
+    suspend fun getListOrder(userId: String): List<OrderDomain>
 
     fun insertOrder(listCloud: MutableList<OrderCloudData?>, onSuccess: () -> Unit)
 
