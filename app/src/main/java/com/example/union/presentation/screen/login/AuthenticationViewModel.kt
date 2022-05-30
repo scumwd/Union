@@ -3,12 +3,10 @@ package com.example.union.presentation.screen.login
 import androidx.lifecycle.ViewModel
 import com.example.domain.auth.AuthenticationUseCase
 import com.example.domain.auth.CheckCurrentUser
-import com.example.domain.save.GetUserFromFireBase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class AuthenticationViewModel(
     private val authenticationUseCase: AuthenticationUseCase,
-    private val getUser: GetUserFromFireBase,
     private val checkCurrentUser: CheckCurrentUser
 ): ViewModel() {
 
@@ -18,10 +16,6 @@ class AuthenticationViewModel(
 
     fun checkCurrentUser(): Boolean {
         return checkCurrentUser.execute()
-    }
-
-    fun getUserFromFireBase() {
-        getUser.getUser()
     }
 
 }

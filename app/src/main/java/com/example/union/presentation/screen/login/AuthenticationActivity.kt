@@ -70,7 +70,6 @@ class AuthenticationActivity : AppCompatActivity() {
                             edPassword.text.toString()
                         )
                     ) {
-                        viewModel.getUserFromFireBase()
                         val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()

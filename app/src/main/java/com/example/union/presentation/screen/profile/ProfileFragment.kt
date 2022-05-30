@@ -59,14 +59,13 @@ class ProfileFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun init() {
         viewModel = ViewModelProvider(this, viewModelFactory)[ProfileViewModel::class.java]
+        displayUserInfo()
         viewModel.getOrder()
         recyclerView = binding.rvOrder
         adapter = OrderAdapter()
         recyclerView.adapter = adapter
 
         displayOrders()
-
-        displayUserInfo()
 
         binding.btnSignOut.setOnClickListener {
             signOut()

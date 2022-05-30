@@ -25,10 +25,10 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class AppModule (val context: Context){
+class AppModule(val context: Context) {
 
     @Provides
-    fun provideContext() : Context{
+    fun provideContext(): Context {
         return context
     }
 
@@ -76,12 +76,10 @@ class AppModule (val context: Context){
     @Provides
     fun provideAuthenticationFactory(
         authenticationUseCase: AuthenticationUseCase,
-        getUser: GetUserFromFireBase,
         checkCurrentUser: CheckCurrentUser
     ): AuthenticationViewModelFactory {
         return AuthenticationViewModelFactory(
             authenticationUseCase = authenticationUseCase,
-            getUser = getUser,
             checkCurrentUser = checkCurrentUser
         )
     }
@@ -104,11 +102,13 @@ class AppModule (val context: Context){
     @Provides
     fun provideHomeViewModelFactory(
         getProductFromFireBase: GetProductFromFireBase,
-        getProductDb: GetProductDb
+        getProductDb: GetProductDb,
+        getUser: GetUserFromFireBase
     ): HomeViewModelFactory {
         return HomeViewModelFactory(
-           getProductDb = getProductDb,
-            getProductFromFireBase = getProductFromFireBase
+            getProductDb = getProductDb,
+            getProductFromFireBase = getProductFromFireBase,
+            getUser = getUser
         )
     }
 

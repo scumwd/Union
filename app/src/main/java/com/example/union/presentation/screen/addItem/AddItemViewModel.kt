@@ -8,7 +8,6 @@ import com.example.domain.cloud.UploadProductImage
 import com.example.domain.getFromDb.CheckProductExists
 import com.example.domain.models.ProductDomain
 import com.example.domain.save.GetProductFromFireBase
-import com.example.union.presentation.PRODUCT_REPOSITORY
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

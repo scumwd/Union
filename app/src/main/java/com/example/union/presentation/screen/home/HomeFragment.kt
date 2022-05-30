@@ -51,6 +51,7 @@ class HomeFragment : Fragment() {
 
     private fun init() {
         val viewModel = ViewModelProvider(this,viewModelFactory).get(HomeViewModel::class.java)
+        viewModel.getUser()
         viewModel.getProductsFromFireBase()
         recyclerView = binding.rvProduct
         adapter = ProductAdapter()

@@ -80,8 +80,13 @@ class ItemDetailFragment : Fragment() {
     }
 
     private fun goToLink() {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(currentProductDomain.productLink))
-        startActivity(intent)
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(currentProductDomain.productLink))
+            startActivity(intent)
+        }
+        catch (e: Exception){
+            Toast.makeText(APP, "Ссылка недействительна.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun buyProduct() {
