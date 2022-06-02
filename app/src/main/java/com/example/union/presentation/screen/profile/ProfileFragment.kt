@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
@@ -16,15 +17,18 @@ import com.example.union.adapter.OrderAdapter
 import com.example.union.app.App
 import com.example.union.databinding.ProfileFragmentBinding
 import com.example.union.presentation.APP
+import com.example.union.presentation.MainActivity
+import com.example.union.presentation.screen.addItem.AddItemViewModel
 import com.example.union.presentation.screen.login.AuthenticationActivity
 import javax.inject.Inject
 
 class ProfileFragment : Fragment() {
 
-    @Inject
-    lateinit var viewModelFactory: ProfileViewModelFactory
 
-    lateinit var viewModel: ProfileViewModel
+    private val viewModel: ProfileViewModel by viewModels {
+        (activity as MainActivity).factory
+    }
+
     lateinit var recyclerView: RecyclerView
     lateinit var adapter: OrderAdapter
     lateinit var binding: ProfileFragmentBinding
@@ -51,14 +55,14 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (APP.applicationContext as App).appComponent.inject(this)
+        //(requireContext().applicationContext as App).appComponent.inject(this)
 
         init()
     }
 
     @SuppressLint("SetTextI18n")
     private fun init() {
-        viewModel = ViewModelProvider(this, viewModelFactory)[ProfileViewModel::class.java]
+        //viewModel = ViewModelProvider(this, viewModelFactory)[ProfileViewModel::class.java]
         displayUserInfo()
         viewModel.getOrder()
         recyclerView = binding.rvOrder

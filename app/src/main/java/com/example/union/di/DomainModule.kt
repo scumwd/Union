@@ -23,47 +23,47 @@ import dagger.Provides
 class DomainModule {
 
     @Provides
-    fun provideAuthenticationUseCase() : AuthenticationUseCase {
-        return AuthenticationUseCase()
+    fun provideAuthenticationUseCase(userRepository: UserRepository) : AuthenticationUseCase {
+        return AuthenticationUseCase(userRepository)
     }
 
     @Provides
-    fun provideAuthorizationUseCase() : AuthorizationUseCase {
-        return AuthorizationUseCase()
+    fun provideAuthorizationUseCase(userRepository: UserRepository) : AuthorizationUseCase {
+        return AuthorizationUseCase(userRepository)
     }
 
     @Provides
-    fun provideOrderInsertCloud() : OrderInsertCloud {
-        return OrderInsertCloud()
+    fun provideOrderInsertCloud(orderRepository: OrderRepository) : OrderInsertCloud {
+        return OrderInsertCloud(orderRepository)
     }
 
     @Provides
-    fun provideProductInsertCloud() : ProductInsertCloud {
-        return ProductInsertCloud()
+    fun provideProductInsertCloud(productRepository: ProductRepository) : ProductInsertCloud {
+        return ProductInsertCloud(productRepository)
     }
 
     @Provides
-    fun provideUserInsertCloud() : UserInsertCloud {
-        return UserInsertCloud()
+    fun provideUserInsertCloud(userRepository: UserRepository) : UserInsertCloud {
+        return UserInsertCloud(userRepository)
     }
 
     @Provides
-    fun provideUpdateProductInFireBase() : UpdateProductInFireBase {
-        return UpdateProductInFireBase()
+    fun provideUpdateProductInFireBase(productRepository: ProductRepository) : UpdateProductInFireBase {
+        return UpdateProductInFireBase(productRepository)
     }
 
     @Provides
-    fun provideUploadProductImage() : UploadProductImage {
-        return UploadProductImage()
+    fun provideUploadProductImage(productRepository: ProductRepository) : UploadProductImage {
+        return UploadProductImage(productRepository)
     }
 
     @Provides
-    fun provideSignOutUseCase() : SignOutUseCase {
-        return SignOutUseCase()
+    fun provideSignOutUseCase(userRepository: UserRepository) : SignOutUseCase {
+        return SignOutUseCase(userRepository)
     }
     @Provides
-    fun provideCheckCurrentUser() : CheckCurrentUser {
-        return CheckCurrentUser()
+    fun provideCheckCurrentUser(userRepository: UserRepository) : CheckCurrentUser {
+        return CheckCurrentUser(userRepository)
     }
 
     @Provides
@@ -105,6 +105,5 @@ class DomainModule {
     fun provideCheckProductExists(productRepository: ProductRepository) : CheckProductExists {
         return CheckProductExists(productRepository)
     }
-
 
 }

@@ -1,36 +1,17 @@
 package com.example.domain.save
 
-import android.util.Log
-import com.example.domain.models.ProductCloudData
 import com.example.domain.repository.ProductRepository
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import java.util.ArrayList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class GetProductFromFireBase(private val productRepository: ProductRepository) {
 
-    private val PRODUCT_KEY: String = "Products"
-
     fun getAllProduct() {
-        val rootRef = FirebaseDatabase.getInstance().reference
-        val messageRef = rootRef.child(PRODUCT_KEY)
-        val valueEventListener: ValueEventListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productsList: MutableList<ProductCloudData?> = ArrayList<ProductCloudData?>()
-                for (ds in dataSnapshot.children) {
-                    val messages: ProductCloudData? = ds.getValue(ProductCloudData::class.java)
-                    productsList.add(messages)
-                }
-                productRepository.insertProduct(productsList) {}
-                productRepository.updateProduct(productsList) {}
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("firebaseErrorProduct", error.message)
-            }
+        GlobalScope.launch(Dispatchers.IO){
+            val productCloud = productRepository.getProductsFireBase()
+            productRepository.insertProduct(productCloud) {}
+            productRepository.updateProduct(productCloud) {}
         }
-        messageRef.addListenerForSingleValueEvent(valueEventListener)
     }
 }

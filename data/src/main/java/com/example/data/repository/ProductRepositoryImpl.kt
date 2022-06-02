@@ -1,20 +1,25 @@
 package com.example.data.repository
 
+import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import com.example.data.models.ProductData
+import com.example.data.models.ProductCloud
+import com.example.data.models.ProductRoom
 import com.example.data.storage.product.ProductDao
-import com.example.domain.models.ProductCloudData
+import com.example.data.storage.product.ProductFirebase
 import com.example.domain.models.ProductDomain
 import com.example.domain.repository.ProductRepository
 
-class ProductRepositoryImpl(private val productDao: ProductDao) : ProductRepository {
+class ProductRepositoryImpl(
+    private val productDao: ProductDao,
+    private val productFirebase: ProductFirebase
+) : ProductRepository {
 
     override val allProductDomain: LiveData<List<ProductDomain>>
         get() = productDao.getAllProduct().map { list ->
             list.map { productLocal ->
                 ProductDomain(
-                    productID = productLocal.productId,
+                    productID = productLocal.productID,
                     productPhoto = productLocal.productPhoto,
                     productPrice = productLocal.productPrice,
                     productLink = productLocal.productLink,
@@ -27,13 +32,13 @@ class ProductRepositoryImpl(private val productDao: ProductDao) : ProductReposit
         }
 
     override fun getListProduct(productLink: String): ProductDomain? {
-        val productDb: ProductData? = productDao.getProduct(productLink = productLink)
+        val productDb: ProductRoom? = productDao.getProduct(productLink = productLink)
         val productDomain: ProductDomain?
         if (productDb?.productCity == null) {
             productDomain = null
         } else {
             productDomain = ProductDomain(
-                productID = productDb.productId,
+                productID = productDb.productID,
                 productLink = productDb.productLink,
                 productPhoto = productDb.productPhoto,
                 productPrice = productDb.productPrice,
@@ -47,30 +52,30 @@ class ProductRepositoryImpl(private val productDao: ProductDao) : ProductReposit
         return productDomain
     }
 
-    override fun insertProduct(listCloud: MutableList<ProductCloudData?>, onSuccess: () -> Unit) {
-        var listRoom: List<ProductData> = mutableListOf()
+    override fun insertProduct(listCloud: List<ProductDomain>, onSuccess: () -> Unit) {
+        var listRoom: List<ProductRoom> = mutableListOf()
         listCloud.forEach { cloud ->
-            val productData = ProductData(
-                productId = cloud?.getProductId().toString(),
-                productName = cloud?.getProductName().toString(),
-                productLink = cloud?.getProductLink().toString(),
-                productPrice = cloud?.getProductPrice().toString().toInt(),
-                productCity = cloud?.getCity().toString(),
-                productPhoto = cloud?.getProductPhoto().toString(),
-                amount = cloud?.getAmount().toString().toInt(),
-                totalAmount = cloud?.getTotalAmount().toString().toInt()
+            val productData = ProductRoom(
+                productID = cloud.productID,
+                productName = cloud.productName,
+                productLink = cloud.productLink,
+                productPrice = cloud.productPrice,
+                productCity = cloud.city,
+                productPhoto = cloud.productPhoto,
+                amount = cloud.amount,
+                totalAmount = cloud.totalAmount
             )
             listRoom = listRoom + productData
         }
         listRoom.forEach {
-            productDao.insert(productData = it)
+            productDao.insert(productRoom = it)
         }
 
         onSuccess()
     }
 
     override suspend fun deleteProduct(productDomain: ProductDomain, onSuccess: () -> Unit) {
-        val productDb = ProductData(
+        val productDb = ProductRoom(
             productName = productDomain.productName,
             productCity = productDomain.city,
             productLink = productDomain.productLink,
@@ -78,30 +83,80 @@ class ProductRepositoryImpl(private val productDao: ProductDao) : ProductReposit
             amount = productDomain.amount,
             productPhoto = productDomain.productPhoto,
             totalAmount = productDomain.totalAmount,
-            productId = productDomain.productID
+            productID = productDomain.productID
         )
-        productDao.delete(productData = productDb)
+        productDao.delete(productRoom = productDb)
         onSuccess()
     }
 
-    override fun updateProduct(listCloud: MutableList<ProductCloudData?>, onSuccess: () -> Unit) {
-        var listRoom: List<ProductData> = mutableListOf()
+    override fun updateProduct(listCloud: List<ProductDomain>, onSuccess: () -> Unit) {
+        var listRoom: List<ProductRoom> = mutableListOf()
         listCloud.forEach { cloud ->
-            val productData = ProductData(
-                productId = cloud?.getProductId().toString(),
-                productName = cloud?.getProductName().toString(),
-                productLink = cloud?.getProductLink().toString(),
-                productPrice = cloud?.getProductPrice().toString().toInt(),
-                productCity = cloud?.getCity().toString(),
-                productPhoto = cloud?.getProductPhoto().toString(),
-                amount = cloud?.getAmount().toString().toInt(),
-                totalAmount = cloud?.getTotalAmount().toString().toInt()
+            val productData = ProductRoom(
+                productID = cloud.productID,
+                productName = cloud.productName,
+                productLink = cloud.productLink,
+                productPrice = cloud.productPrice,
+                productCity = cloud.city,
+                productPhoto = cloud.productPhoto,
+                amount = cloud.amount,
+                totalAmount = cloud.totalAmount
             )
             listRoom = listRoom + productData
         }
         listRoom.forEach {
-            productDao.update(productData = it)
+            productDao.update(productRoom = it)
         }
         onSuccess()
+    }
+
+    override suspend fun insertProductFireBase(productDomain: ProductDomain) {
+        productFirebase.insert(
+            ProductCloud(
+                productName = productDomain.productName,
+                productCity = productDomain.city,
+                productLink = productDomain.productLink,
+                productPrice = productDomain.productPrice,
+                amount = productDomain.amount,
+                productPhoto = productDomain.productPhoto,
+                totalAmount = productDomain.totalAmount,
+                productID = productDomain.productID
+            )
+        )
+    }
+
+    override suspend fun updateTotalAmountProduct(productDomain: ProductDomain) {
+        val productCloud = ProductCloud(
+            productName = productDomain.productName,
+            productCity = productDomain.city,
+            productLink = productDomain.productLink,
+            productPrice = productDomain.productPrice,
+            amount = productDomain.amount,
+            productPhoto = productDomain.productPhoto,
+            totalAmount = productDomain.totalAmount,
+            productID = productDomain.productID
+        )
+        productFirebase.update(productCloud)
+    }
+
+    override suspend fun getProductsFireBase(): List<ProductDomain> {
+        val listFirebase = productFirebase.getProducts()
+        val listDomain: List<ProductDomain> = listFirebase.map { cloud ->
+            ProductDomain(
+                productID = cloud?.getProductId().toString(),
+                productName = cloud?.getProductName().toString(),
+                productLink = cloud?.getProductLink().toString(),
+                productPrice = cloud?.getProductPrice().toString().toInt(),
+                city = cloud?.getProductCity().toString(),
+                productPhoto = cloud?.getProductPhoto().toString(),
+                amount = cloud?.getAmount().toString().toInt(),
+                totalAmount = cloud?.getTotalAmount().toString().toInt()
+            )
+        }
+        return listDomain
+    }
+
+    override suspend fun uploadProductImage(photo: ImageView): String {
+        return productFirebase.uploadImage(photo)
     }
 }

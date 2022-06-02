@@ -1,4 +1,4 @@
-package com.example.domain.models
+package com.example.data.models
 
 
 class ProductCloudData {
@@ -8,7 +8,7 @@ class ProductCloudData {
     private var productPrice: Int = 0
     private var amount: Int = 0
     private var totalAmount: Int = 0
-    private var city: String = ""
+    private var productCity: String = ""
     private var productPhoto: String = ""
 
     fun ProductCloudData() {}
@@ -21,7 +21,7 @@ class ProductCloudData {
         productPrice: Int,
         amount: Int,
         totalAmount: Int,
-        city: String,
+        productCity: String,
         productPhoto: String
     ) {
         this.productName = productName
@@ -30,7 +30,7 @@ class ProductCloudData {
         this.productPrice = productPrice
         this.amount = amount
         this.totalAmount = totalAmount
-        this.city = city
+        this.productCity = productCity
         this.productPhoto = productPhoto
     }
 
@@ -52,8 +52,8 @@ class ProductCloudData {
     fun getTotalAmount(): Int {
         return totalAmount; }
 
-    fun getCity(): String {
-        return city; }
+    fun getProductCity(): String {
+        return productCity; }
 
     fun getProductPhoto(): String {
         return productPhoto; }

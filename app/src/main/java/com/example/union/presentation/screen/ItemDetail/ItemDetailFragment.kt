@@ -9,34 +9,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
-import com.example.domain.update.UpdateProductInFireBase
 import com.example.union.R
 import com.example.union.app.App
 import com.example.union.databinding.ItemDetailFragmentBinding
-import com.example.union.presentation.APP
-import com.google.firebase.auth.FirebaseAuth
+import com.example.union.presentation.MainActivity
 import kotlinx.coroutines.*
-import javax.inject.Inject
 
 class ItemDetailFragment : Fragment() {
 
-    @Inject
-    lateinit var viewModelFactory: ItemDetailViewModelFactory
+    private val viewModel: ItemDetailViewModel by viewModels {
+        (activity as MainActivity).factory
+    }
 
     lateinit var binding: ItemDetailFragmentBinding
     lateinit var currentProductDomain: ProductDomain
-    private lateinit var viewModel: ItemDetailViewModel
-    lateinit var mAuth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = ItemDetailFragmentBinding.inflate(layoutInflater, container, false)
         currentProductDomain = arguments?.getSerializable("product") as ProductDomain
         return binding.root
@@ -45,14 +42,13 @@ class ItemDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (APP.applicationContext as App).appComponent.inject(this)
+        (requireContext().applicationContext as App).appComponent.inject(this)
 
         init()
     }
 
     @SuppressLint("SetTextI18n")
     private fun init() {
-        viewModel = ViewModelProvider(this,viewModelFactory)[ItemDetailViewModel::class.java]
         binding.run {
 
             displayProduct()
@@ -85,7 +81,7 @@ class ItemDetailFragment : Fragment() {
             startActivity(intent)
         }
         catch (e: Exception){
-            Toast.makeText(APP, "Ссылка недействительна.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Ссылка недействительна.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -95,14 +91,14 @@ class ItemDetailFragment : Fragment() {
             if (currentProductDomain.productID.let { viewModel.checkOrder(it) }) {
                 withContext(lifecycleScope.coroutineContext) {
                     Toast.makeText(
-                        APP,
+                        requireContext(),
                         "Вы уже участвуете в покупке.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             } else {
                 insertOrderIntoDb()
-                val totalAmount =
+                currentProductDomain.totalAmount =
                     binding.edTotalAmount.text.toString().toInt() + currentProductDomain.totalAmount
                 val productDomain = ProductDomain(
                     productID = currentProductDomain.productID,
@@ -110,14 +106,17 @@ class ItemDetailFragment : Fragment() {
                     productLink = currentProductDomain.productLink,
                     productPrice = currentProductDomain.productPrice,
                     amount = currentProductDomain.amount,
-                    totalAmount = totalAmount,
+                    totalAmount = currentProductDomain.totalAmount,
                     city = currentProductDomain.city,
                     productPhoto = currentProductDomain.productPhoto
                 )
+                withContext(lifecycleScope.coroutineContext){
+                    displayProduct()
+                }
                 viewModel.update(productDomain)
                 withContext(lifecycleScope.coroutineContext) {
                     Toast.makeText(
-                        APP,
+                        requireContext(),
                         "Вы успешно зарезервировали товар.",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -131,7 +130,7 @@ class ItemDetailFragment : Fragment() {
         binding.run {
             tvNameProduct.text = currentProductDomain.productName
             Glide
-                .with(APP)
+                .with(requireContext())
                 .load(currentProductDomain.productPhoto)
                 .error(R.drawable.ic_empty_photo)
                 .into(ivProductPhoto)
@@ -144,25 +143,17 @@ class ItemDetailFragment : Fragment() {
     }
 
     private fun navigateToHomeFragment() {
-        APP.navController.navigate(R.id.action_itemDetailFragment_to_homeFragment)
+        findNavController().navigate(R.id.action_itemDetailFragment_to_homeFragment)
     }
 
     private fun insertOrderIntoDb() {
-        mAuth = FirebaseAuth.getInstance()
-        val userId = mAuth.currentUser?.uid
         val totalAmountBuy: Int = binding.edTotalAmount.text.toString().toInt()
-        val orderDomain = userId?.let { it1 ->
-            currentProductDomain.productID.let {
-                OrderDomain(
-                    productID = it,
-                    userId = it1,
-                    totalAmount = totalAmountBuy
-                )
-            }
-        }
-        if (orderDomain != null) {
-            viewModel.insert(orderDomain)
-        }
+        val orderDomain = OrderDomain(
+            userId = "",
+            productID = currentProductDomain.productID,
+            totalAmount = totalAmountBuy
+        )
+        viewModel.insert(orderDomain)
     }
 
     private fun subtractTotalAmount() {

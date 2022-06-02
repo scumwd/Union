@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.domain.models.ProductDomain
@@ -13,12 +14,15 @@ import com.example.union.adapter.ProductAdapter
 import com.example.union.app.App
 import com.example.union.databinding.HomeFragmentBinding
 import com.example.union.presentation.APP
+import com.example.union.presentation.MainActivity
+import com.example.union.presentation.screen.addItem.AddItemViewModel
 import javax.inject.Inject
 
 class HomeFragment : Fragment() {
 
-    @Inject
-    lateinit var viewModelFactory: HomeViewModelFactory
+    private val viewModel: HomeViewModel by viewModels {
+        (activity as MainActivity).factory
+    }
 
     lateinit var recyclerView: RecyclerView
     lateinit var binding: HomeFragmentBinding
@@ -44,13 +48,10 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (APP.applicationContext as App).appComponent.inject(this)
-
         init()
     }
 
     private fun init() {
-        val viewModel = ViewModelProvider(this,viewModelFactory).get(HomeViewModel::class.java)
         viewModel.getUser()
         viewModel.getProductsFromFireBase()
         recyclerView = binding.rvProduct

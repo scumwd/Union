@@ -10,8 +10,9 @@ import com.example.domain.models.ProductDomain
 import com.example.domain.save.GetProductFromFireBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AddItemViewModel(
+class AddItemViewModel@Inject constructor (
     private val getProductFromFireBase: GetProductFromFireBase,
     private val productInsertCloud: ProductInsertCloud,
     private val uploadProductImage: UploadProductImage,

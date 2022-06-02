@@ -1,16 +1,16 @@
 package com.example.domain.update
 
 import com.example.domain.models.ProductDomain
-import com.google.firebase.database.FirebaseDatabase
+import com.example.domain.repository.ProductRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-class UpdateProductInFireBase {
-
-    private val PRODUCT_KEY: String = "Products"
+class UpdateProductInFireBase(val productRepository: ProductRepository) {
 
     fun execute(productDomain: ProductDomain) {
-        val rootRef = FirebaseDatabase.getInstance().reference
-        val messageRef = rootRef.child(PRODUCT_KEY)
-        messageRef.child(productDomain.productID).child("totalAmount")
-            .setValue(productDomain.totalAmount)
+        GlobalScope.launch (Dispatchers.IO){
+            productRepository.updateTotalAmountProduct(productDomain)
+        }
     }
 }

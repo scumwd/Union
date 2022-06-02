@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "user_table")
-class UserData(
+class UserRoom(
     @PrimaryKey
     val userId: String,
 

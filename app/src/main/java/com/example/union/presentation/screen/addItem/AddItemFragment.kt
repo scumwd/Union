@@ -3,8 +3,6 @@ package com.example.union.presentation.screen.addItem
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -19,30 +17,29 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.domain.models.ProductDomain
 import com.example.union.databinding.AddItemFragmentBinding
-import com.example.union.presentation.APP
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import java.io.ByteArrayOutputStream
-import java.util.*
 import android.view.Window
 import android.app.Dialog
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.union.R
 import com.example.union.R.*
 import com.example.union.app.App
+import com.example.union.presentation.MainActivity
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 
 
 class AddItemFragment : Fragment() {
 
-    @Inject
-    lateinit var viewModelFactory: AddItemViewModelFactory
 
     lateinit var binding: AddItemFragmentBinding
-    private lateinit var viewModel: AddItemViewModel
+
     private lateinit var ivProductPhoto: ImageView
+
+    private val viewModel: AddItemViewModel by viewModels {
+        (activity as MainActivity).factory
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,14 +52,11 @@ class AddItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (APP.applicationContext as App).appComponent.inject(this)
-
         init()
     }
 
     private fun init() {
         ivProductPhoto = binding.ivProductPhoto
-        viewModel = ViewModelProvider(this, viewModelFactory)[AddItemViewModel::class.java]
 
         binding.edProductPhoto.setOnClickListener {
             getImage()
@@ -93,7 +87,7 @@ class AddItemFragment : Fragment() {
         }
 
     private fun checkFields() {
-        val pd = Dialog(APP, android.R.style.Theme_Black)
+        val pd = Dialog(requireContext(), android.R.style.Theme_Black)
         val view: View = LayoutInflater.from(context).inflate(layout.progressbar, null)
         pd.requestWindowFeature(Window.FEATURE_NO_TITLE)
         pd.window?.setBackgroundDrawableResource(color.transparent)
@@ -106,7 +100,7 @@ class AddItemFragment : Fragment() {
                 val listProduct = viewModel.chekProduct(linkProduct.toString())
                 if (listProduct != null && listProduct.city == binding.edProductCity.text.toString()) {
                     Toast.makeText(
-                        APP,
+                        requireContext(),
                         "Данный товар уже опубликован.",
                         Toast.LENGTH_LONG
                     ).show()
@@ -115,7 +109,7 @@ class AddItemFragment : Fragment() {
                         "product",
                         listProduct
                     )
-                    APP.navController.navigate(
+                    findNavController().navigate(
                         R.id.action_addItemFragment_to_itemDetailFragment,
                         bundle
                     )
@@ -128,7 +122,7 @@ class AddItemFragment : Fragment() {
                             || edProductPrice.text.toString().isEmpty()
                         )
                             Toast.makeText(
-                                APP,
+                                requireContext(),
                                 "Пожалуйста, заполните все поля.",
                                 Toast.LENGTH_SHORT
                             )
@@ -160,13 +154,13 @@ class AddItemFragment : Fragment() {
 
             } else
                 Toast.makeText(
-                    context,
+                    requireContext(),
                     "Введенная ссылка не корректна.",
                     Toast.LENGTH_SHORT
                 )
                     .show()
         } else {
-            Toast.makeText(context, "Пожалуйста, выберите изображение.", Toast.LENGTH_SHORT)
+            Toast.makeText(requireContext(), "Пожалуйста, выберите изображение.", Toast.LENGTH_SHORT)
                 .show()
         }
     }
@@ -191,7 +185,7 @@ class AddItemFragment : Fragment() {
         viewModel.insertInFireBase(productDomain)
         viewModel.getProductsFromFireBase()
         Toast.makeText(
-            APP,
+            requireContext(),
             "Товар опубликован успешно.",
             Toast.LENGTH_LONG
         ).show()

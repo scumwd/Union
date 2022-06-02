@@ -7,8 +7,9 @@ import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
 import com.example.domain.save.GetOrderFromFireBase
 import com.example.domain.update.UpdateProductInFireBase
+import javax.inject.Inject
 
-class ItemDetailViewModel(
+class ItemDetailViewModel @Inject constructor(
     private val getOrderFromFireBase: GetOrderFromFireBase,
     private val orderInsertCloud: OrderInsertCloud,
     private val updateProductInFireBase: UpdateProductInFireBase,

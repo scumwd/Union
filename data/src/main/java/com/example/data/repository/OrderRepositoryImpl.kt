@@ -2,27 +2,46 @@ package com.example.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import com.example.data.models.OrderData
+import com.example.data.models.OrderCloud
+import com.example.data.models.OrderRoom
 import com.example.data.storage.order.OrderDao
-import com.example.domain.models.OrderCloudData
+import com.example.data.models.OrderCloudData
+import com.example.data.storage.order.OrderFirebase
 import com.example.domain.models.OrderDomain
+import com.example.domain.models.ProductDomain
 import com.example.domain.repository.OrderRepository
+import com.google.firebase.auth.FirebaseAuth
 
-class OrderRepositoryImpl(private val orderDao: OrderDao) :
+class OrderRepositoryImpl(
+    private val orderDao: OrderDao,
+    private val orderFirebase: OrderFirebase
+) :
     OrderRepository {
 
-    override suspend fun getListOrder(userId: String): List<OrderDomain> {
-        return orderDao.getListOrder(userId).map { orderLocal ->
+    private lateinit var mAuth: FirebaseAuth
+
+    override suspend fun getListOrder(productId: String): OrderDomain? {
+        mAuth = FirebaseAuth.getInstance()
+        val userId: String
+        mAuth.currentUser?.uid.let { userId = it.toString() }
+        val orderRoom = orderDao.getListOrder(userId, productId)
+        val orderDomain: OrderDomain? = orderRoom?.let {
             OrderDomain(
-                productID = orderLocal.productId,
-                userId = orderLocal.userId,
-                totalAmount = orderLocal.totalAmount
+                productID = orderRoom.productId,
+                userId = it.userId,
+                totalAmount = orderRoom.totalAmount
             )
         }
+        return orderDomain
     }
 
-    override fun allOrderDomain(userId: String): LiveData<List<OrderDomain>> =
-        orderDao.getOrders(userId).map { list ->
+
+    override fun allOrderDomain(): LiveData<List<OrderDomain>> {
+        mAuth = FirebaseAuth.getInstance()
+        val userId: String
+        mAuth.currentUser?.uid.let { userId = it.toString() }
+
+        return orderDao.getOrders(userId).map { list ->
             list.map { orderLocal ->
                 OrderDomain(
                     productID = orderLocal.productId,
@@ -31,31 +50,52 @@ class OrderRepositoryImpl(private val orderDao: OrderDao) :
                 )
             }
         }
+    }
 
-    override fun insertOrder(listCloud: MutableList<OrderCloudData?>, onSuccess: () -> Unit) {
-        var listRoom: List<OrderData> = mutableListOf()
+    override fun insertOrder(listCloud: List<OrderDomain?>, onSuccess: () -> Unit) {
+        var listRoom: List<OrderRoom?> = mutableListOf()
         listCloud.forEach { cloud ->
-            val orderData = OrderData(
-                productId = cloud?.getProductId().toString(),
-                userId = cloud?.getUserId().toString(),
-                totalAmount = cloud?.getTotalAmount().toString().toInt()
-            )
+            val orderData = cloud?.userId?.let {
+                OrderRoom(
+                    productId = cloud.productID,
+                    userId = it,
+                    totalAmount = cloud.totalAmount
+                )
+            }
             listRoom = listRoom + orderData
         }
         listRoom.forEach {
-            orderDao.insert(it)
+            if (it != null) {
+                orderDao.insert(it)
+            }
         }
 
         onSuccess()
     }
 
-    override suspend fun deleteOrder(orderDomain: OrderDomain, onSuccess: () -> Unit) {
-        val orderDb = OrderData(
-            productId = orderDomain.productID,
-            userId = orderDomain.userId,
+
+    override suspend fun insertOrderFireBase(orderDomain: OrderDomain) {
+        mAuth = FirebaseAuth.getInstance()
+        val userId: String
+        mAuth.currentUser?.uid.let { userId = it.toString() }
+
+        orderFirebase.insertOrder(OrderCloud(
+            userId = userId,
+            productID = orderDomain.productID,
             totalAmount = orderDomain.totalAmount
-        )
-        orderDao.delete(orderDb)
-        onSuccess()
+        ))
+    }
+
+    override suspend fun getOrdersFirebase(): List<OrderDomain> {
+        val cloudOrder = orderFirebase.getOrders()
+        val listDomain: List<OrderDomain> = cloudOrder.map { cloud ->
+            OrderDomain(
+                productID = cloud?.getProductId().toString(),
+                userId = cloud?.getUserId().toString(),
+                totalAmount = cloud?.getTotalAmount().toString().toInt()
+
+            )
+        }
+        return listDomain
     }
 }

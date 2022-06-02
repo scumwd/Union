@@ -1,18 +1,12 @@
 package com.example.domain.auth
 
-import com.google.firebase.auth.FirebaseAuth
+import com.example.domain.repository.UserRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
 
-class AuthenticationUseCase {
+class AuthenticationUseCase(val userRepository: UserRepository) {
 
-    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
     @ExperimentalCoroutinesApi
-    suspend fun logIn(email: String, password: String): Boolean =
-        suspendCancellableCoroutine { continuation ->
-            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener() { task ->
-                continuation.resume(task.isSuccessful) {}
-            }
-        }
+    suspend fun logIn(email: String, password: String): Boolean = userRepository.authentication(email,password)
+
 }

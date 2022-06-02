@@ -5,9 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "product_table")
-class ProductData(
+class ProductRoom(
     @PrimaryKey
-    var productId: String = "",
+    var productID: String = "",
 
     @ColumnInfo
     var productName: String = "",

@@ -9,17 +9,24 @@ import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
 import com.example.union.R
 import com.example.union.databinding.OrderDetailFragmentBinding
-import com.example.union.presentation.APP
+import com.example.union.presentation.MainActivity
+import com.example.union.presentation.screen.addItem.AddItemViewModel
 
 class OrderDetailFragment : Fragment() {
 
     lateinit var binding: OrderDetailFragmentBinding
-    private lateinit var viewModel: OrderDetailViewModel
+
+    private val viewModel: OrderDetailViewModel by viewModels {
+        (activity as MainActivity).factory
+    }
     lateinit var currentProductDomain: ProductDomain
     lateinit var currentOrder: OrderDomain
 
@@ -39,7 +46,6 @@ class OrderDetailFragment : Fragment() {
     }
 
     private fun init() {
-        viewModel = ViewModelProvider(this)[OrderDetailViewModel::class.java]
         displayOrder()
 
         binding.tvLink.setOnClickListener {
@@ -52,12 +58,17 @@ class OrderDetailFragment : Fragment() {
     }
 
     private fun navigateToProfileFragment() {
-        APP.navController.navigate(R.id.action_orderDetailFragment_to_profileFragment)
+        findNavController().navigate(R.id.action_orderDetailFragment_to_profileFragment)
     }
 
     private fun goToLink() {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(currentProductDomain.productLink))
-        startActivity(intent)
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(currentProductDomain.productLink))
+            startActivity(intent)
+        }
+        catch (e: Exception){
+            Toast.makeText(requireContext(), "Ссылка недействительна.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -65,7 +76,7 @@ class OrderDetailFragment : Fragment() {
         binding.run {
             tvNameProduct.text = currentProductDomain.productName
             Glide
-                .with(APP)
+                .with(requireContext())
                 .load(currentProductDomain.productPhoto)
                 .error(R.drawable.ic_empty_photo)
                 .into(ivProductPhoto)

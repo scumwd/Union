@@ -1,35 +1,16 @@
 package com.example.domain.save
 
-import android.util.Log
-import com.example.domain.models.OrderCloudData
 import com.example.domain.repository.OrderRepository
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import java.util.ArrayList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class GetOrderFromFireBase(private val orderRepository: OrderRepository) {
 
-    private val ORDER_KEY: String = "Orders"
-
     fun getAllProduct() {
-        val rootRef = FirebaseDatabase.getInstance().reference
-        val messageRef = rootRef.child(ORDER_KEY)
-        val valueEventListener: ValueEventListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productsList: MutableList<OrderCloudData?> = ArrayList<OrderCloudData?>()
-                for (ds in dataSnapshot.children) {
-                    val messages: OrderCloudData? = ds.getValue(OrderCloudData::class.java)
-                    productsList.add(messages)
-                }
-                orderRepository.insertOrder(productsList) {}
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("firebaseErrorOrder", error.message)
-            }
+        GlobalScope.launch (Dispatchers.IO){
+            val listFireBase = orderRepository.getOrdersFirebase()
+            orderRepository.insertOrder(listFireBase) {}
         }
-        messageRef.addListenerForSingleValueEvent(valueEventListener)
     }
 }

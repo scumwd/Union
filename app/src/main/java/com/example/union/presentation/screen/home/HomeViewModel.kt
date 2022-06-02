@@ -9,8 +9,9 @@ import com.example.domain.save.GetProductFromFireBase
 import com.example.domain.save.GetUserFromFireBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel(
+class HomeViewModel @Inject constructor(
     private val getProductFromFireBase: GetProductFromFireBase,
     private val getProductDb: GetProductDb,
     private val getUser: GetUserFromFireBase

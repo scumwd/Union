@@ -1,13 +1,10 @@
 package com.example.domain.auth
 
-import com.google.firebase.auth.FirebaseAuth
+import com.example.domain.repository.UserRepository
 
-class SignOutUseCase {
-
-    lateinit var mAuth: FirebaseAuth
+class SignOutUseCase(val userRepository: UserRepository) {
 
     fun execute(){
-        mAuth = FirebaseAuth.getInstance()
-        mAuth.signOut()
+        userRepository.signOut()
     }
 }

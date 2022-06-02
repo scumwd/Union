@@ -6,13 +6,13 @@ import android.os.Bundle
 import android.util.Patterns.EMAIL_ADDRESS
 import android.widget.EditText
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.domain.models.UserDomain
 import com.example.union.R
 import com.example.union.app.App
 import com.example.union.databinding.AuthorizationBinding
-import com.example.union.presentation.APP
+import com.example.union.presentation.ViewModelFactory
 import com.example.union.presentation.screen.login.AuthenticationActivity
 import kotlinx.android.synthetic.main.authorization.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,10 +23,13 @@ import javax.inject.Inject
 class AuthorizationActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var viewModelFactory: AuthorizationViewModelFactory
+    lateinit var factory: ViewModelFactory
 
     lateinit var binding: AuthorizationBinding
-    lateinit var viewModel: AuthorizationViewModel
+
+    private val viewModel: AuthorizationViewModel by viewModels {
+        factory
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +44,6 @@ class AuthorizationActivity : AppCompatActivity() {
 
     @ExperimentalCoroutinesApi
     private fun init() {
-        viewModel = ViewModelProvider(this,viewModelFactory)[AuthorizationViewModel::class.java]
 
         binding.run {
             signUp.setOnClickListener {

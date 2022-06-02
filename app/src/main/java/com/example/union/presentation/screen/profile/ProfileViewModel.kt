@@ -10,8 +10,9 @@ import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
 import com.example.domain.models.UserWithUID
 import com.example.domain.save.GetOrderFromFireBase
+import javax.inject.Inject
 
-class ProfileViewModel(
+class ProfileViewModel @Inject constructor(
     private val getUserDb: GetUserDb,
     private val getProductDb: GetProductDb,
     private val getOrderDb: GetOrderDb,

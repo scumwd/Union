@@ -1,37 +1,18 @@
 package com.example.domain.auth
 
-import com.example.domain.cloud.UserInsertCloud
 import com.example.domain.models.UserDomain
-import com.example.domain.models.UserWithUID
-import com.google.firebase.auth.FirebaseAuth
+import com.example.domain.repository.UserRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
 
-class AuthorizationUseCase {
-
-    private lateinit var mAuth: FirebaseAuth
+class AuthorizationUseCase(val userRepository: UserRepository) {
 
     @ExperimentalCoroutinesApi
     suspend fun execute(userDomain: UserDomain): Boolean {
-        mAuth = FirebaseAuth.getInstance()
-        val userInsertCloud = UserInsertCloud()
-        val result: Boolean = suspendCancellableCoroutine { continuation ->
-            mAuth.createUserWithEmailAndPassword(userDomain.email, userDomain.password)
-                .addOnCompleteListener() { task ->
-                    if (task.isSuccessful) {
-                        val userWithUID = UserWithUID(
-                            userId = mAuth.currentUser?.uid.toString(),
-                            email = userDomain.email,
-                            firstName = userDomain.firstName,
-                            lastName = userDomain.lastName
-                        )
-                        userInsertCloud.insert(
-                            userWithUID = userWithUID
-                        )
-                    }
-                    continuation.resume(task.isSuccessful) {}
-                }
-        }
-        return result
+        val userWithUID = userRepository.authorization(userDomain)
+        return if ( userWithUID != null) {
+            userRepository.saveUser(userWithUID) {}
+            true
+        } else
+            false
     }
 }

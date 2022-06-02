@@ -1,13 +1,25 @@
 package com.example.domain.repository
 
 import androidx.lifecycle.LiveData
-import com.example.domain.models.UserCloudData
+import com.example.domain.models.UserDomain
 import com.example.domain.models.UserWithUID
 
 interface UserRepository {
 
-    fun getUser(userId: String): LiveData<UserWithUID>
+    fun getUser(): LiveData<UserWithUID>
 
-    fun saveUser(userCloudData: UserCloudData, onSuccess: () -> Unit)
+    fun saveUser(userCloudData: UserWithUID?, onSuccess: () -> Unit)
+
+    fun signOut()
+
+    suspend fun authentication(email: String, password: String): Boolean
+
+    suspend fun authorization(userDomain: UserDomain) : UserWithUID?
+
+    fun currentUser(): String?
+
+    suspend fun insertUserFirebase(userWithUID: UserWithUID)
+
+    suspend fun getUserFirebase() : UserWithUID?
 
 }

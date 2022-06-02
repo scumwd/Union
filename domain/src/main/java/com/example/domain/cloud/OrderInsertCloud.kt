@@ -1,19 +1,17 @@
 package com.example.domain.cloud
 
 import com.example.domain.models.OrderDomain
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-import java.util.*
+import com.example.domain.repository.OrderRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-class OrderInsertCloud {
-
-    private val ORDER_KEY: String = "Orders"
+class OrderInsertCloud(val orderRepository: OrderRepository) {
 
     fun insert(orderDomain: OrderDomain) {
-        val orderId: String = UUID.randomUUID().toString()
-        val database = Firebase.database
-        val myRef = database.getReference(ORDER_KEY)
-        myRef.child(orderId).setValue(orderDomain)
+        GlobalScope.launch(Dispatchers.IO){
+            orderRepository.insertOrderFireBase(orderDomain)
+        }
     }
 
 }

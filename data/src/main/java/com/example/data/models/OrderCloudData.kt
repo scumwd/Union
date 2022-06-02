@@ -1,4 +1,4 @@
-package com.example.domain.models
+package com.example.data.models
 
 class OrderCloudData {
     private var productID: String = ""

@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.data.models.OrderData
-import com.example.data.models.ProductData
-import com.example.data.models.UserData
+import com.example.data.models.OrderRoom
+import com.example.data.models.ProductRoom
+import com.example.data.models.UserRoom
 
-@Database(entities = [ProductData::class, OrderData::class, UserData::class], version = 9)
+@Database(entities = [ProductRoom::class, OrderRoom::class, UserRoom::class], version = 9)
 abstract class ProductDb : RoomDatabase() {
     abstract fun getProductDao(): ProductDao
 

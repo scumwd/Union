@@ -4,12 +4,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.union.app.App
 import com.example.union.databinding.AuthenticationBinding
-import com.example.union.presentation.APP
 import com.example.union.presentation.MainActivity
+import com.example.union.presentation.ViewModelFactory
 import com.example.union.presentation.screen.register.AuthorizationActivity
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -17,10 +17,13 @@ import javax.inject.Inject
 class AuthenticationActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var viewModelFactory: AuthenticationViewModelFactory
+    lateinit var factory: ViewModelFactory
+
+    private val viewModel: AuthenticationViewModel by viewModels {
+        factory
+    }
 
     private lateinit var binding: AuthenticationBinding
-    lateinit var viewModel: AuthenticationViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +37,6 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        viewModel = ViewModelProvider(this, viewModelFactory)[AuthenticationViewModel::class.java]
         if (viewModel.checkCurrentUser()) {
             val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
             startActivity(intent)

@@ -1,16 +1,16 @@
 package com.example.domain.cloud
 
 import com.example.domain.models.UserWithUID
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+import com.example.domain.repository.UserRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-class UserInsertCloud {
-
-    private val USER_KEY: String = "Users"
+class UserInsertCloud(val userRepository: UserRepository) {
 
     fun insert(userWithUID: UserWithUID) {
-        val database = Firebase.database
-        val myRef = database.getReference(USER_KEY)
-        myRef.child(userWithUID.userId).setValue(userWithUID)
+        GlobalScope.launch(Dispatchers.IO){
+            userRepository.insertUserFirebase(userWithUID)
+        }
     }
 }

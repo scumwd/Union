@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import com.example.domain.auth.AuthenticationUseCase
 import com.example.domain.auth.CheckCurrentUser
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import javax.inject.Inject
 
-class AuthenticationViewModel(
+class AuthenticationViewModel @Inject constructor(
     private val authenticationUseCase: AuthenticationUseCase,
     private val checkCurrentUser: CheckCurrentUser
 ): ViewModel() {

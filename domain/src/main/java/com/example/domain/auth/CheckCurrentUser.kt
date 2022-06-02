@@ -1,14 +1,11 @@
 package com.example.domain.auth
 
-import com.google.firebase.auth.FirebaseAuth
+import com.example.domain.repository.UserRepository
 
-class CheckCurrentUser {
-
-    lateinit var mAuth: FirebaseAuth
+class CheckCurrentUser(val userRepository: UserRepository) {
 
     fun execute(): Boolean{
-        mAuth = FirebaseAuth.getInstance()
-        return mAuth.currentUser != null
+        return userRepository.currentUser() != null
     }
 
 }
