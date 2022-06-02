@@ -1,10 +1,13 @@
 package com.example.union.adapter
 
 import android.annotation.SuppressLint
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.domain.models.OrderDomain
@@ -12,6 +15,7 @@ import com.example.domain.models.ProductDomain
 import com.example.union.R
 import com.example.union.presentation.APP
 import com.example.union.presentation.screen.home.HomeFragment
+import com.example.union.presentation.screen.profile.ProfileFragment.Companion.clickProduct
 import kotlinx.android.synthetic.main.item.view.*
 
 class ProductAdapter : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
@@ -59,7 +63,9 @@ class ProductAdapter : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() 
     override fun onViewAttachedToWindow(holder: ProductViewHolder) {
         super.onViewAttachedToWindow(holder)
         holder.itemView.setOnClickListener {
-            HomeFragment.clickProduct(listProduct[holder.adapterPosition])
+            val bundle = Bundle()
+            bundle.putSerializable("product", listProduct[holder.adapterPosition])
+            it.findNavController().navigate(R.id.action_homeFragment_to_itemDetailFragment, bundle)
         }
     }
 

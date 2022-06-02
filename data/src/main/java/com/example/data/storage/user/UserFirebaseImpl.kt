@@ -40,9 +40,11 @@ class UserFirebaseImpl: UserFirebase {
                             lastName = userDomain.lastName
                         )
                     }
+                    Log.e("tsdk", task.isSuccessful.toString())
                     continuation.resume(userWithUID) {}
                 }
         }
+        Log.e("ssdd", result?.userId.toString())
         return result
     }
 
