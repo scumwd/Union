@@ -1,16 +1,17 @@
 package com.example.union.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
 import com.example.union.R
-import com.example.union.presentation.APP
-import com.example.union.presentation.screen.profile.ProfileFragment
 import kotlinx.android.synthetic.main.item.view.iv_productPhoto
 import kotlinx.android.synthetic.main.item.view.tvCity
 import kotlinx.android.synthetic.main.item.view.tvCount
@@ -18,7 +19,7 @@ import kotlinx.android.synthetic.main.item.view.tvName
 import kotlinx.android.synthetic.main.item.view.tvPrice
 import kotlinx.android.synthetic.main.item_order.view.*
 
-class OrderAdapter : RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
+class OrderAdapter(val context: Context) : RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
 
     var listProduct = emptyList<ProductDomain>()
     var listOrder = emptyList<OrderDomain>()
@@ -42,7 +43,7 @@ class OrderAdapter : RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
         holder.itemView.tvPrice.text = "${listProduct[position].productPrice}$ за шт"
         holder.itemView.tvTotalAmount.text = "Вы берете: ${listOrder[position].totalAmount}шт"
         Glide
-            .with(APP)
+            .with(context)
             .load(listProduct[position].productPhoto)
             .error(R.drawable.ic_empty_photo)
             .dontAnimate()
@@ -71,10 +72,10 @@ class OrderAdapter : RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
     override fun onViewAttachedToWindow(holder: OrderViewHolder) {
         super.onViewAttachedToWindow(holder)
         holder.itemView.setOnClickListener {
-            ProfileFragment.clickProduct(
-                listProduct[holder.adapterPosition],
-                listOrder[holder.adapterPosition]
-            )
+            val bundle = Bundle()
+            bundle.putSerializable("product", listProduct[holder.adapterPosition])
+            bundle.putSerializable("order", listOrder[holder.adapterPosition])
+            it.findNavController().navigate(R.id.action_profileFragment_to_orderDetailFragment, bundle)
         }
     }
 

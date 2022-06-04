@@ -5,7 +5,7 @@ class ProductCloudData {
     private var productID: String? = null
     private var productName: String? = null
     private var productLink: String = ""
-    private var productPrice: Int = 0
+    private var productPrice: Double = 0.0
     private var amount: Int = 0
     private var totalAmount: Int = 0
     private var productCity: String = ""
@@ -18,7 +18,7 @@ class ProductCloudData {
         productName: String,
         productID: String,
         productLink: String,
-        productPrice: Int,
+        productPrice: Double,
         amount: Int,
         totalAmount: Int,
         productCity: String,
@@ -43,7 +43,7 @@ class ProductCloudData {
     fun getProductLink(): String {
         return productLink; }
 
-    fun getProductPrice(): Int {
+    fun getProductPrice(): Double {
         return productPrice; }
 
     fun getAmount(): Int {

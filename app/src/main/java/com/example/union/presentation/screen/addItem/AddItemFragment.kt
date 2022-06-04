@@ -4,7 +4,6 @@ package com.example.union.presentation.screen.addItem
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -24,10 +23,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.union.R
 import com.example.union.R.*
-import com.example.union.app.App
 import com.example.union.presentation.MainActivity
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
 class AddItemFragment : Fragment() {
@@ -137,7 +134,7 @@ class AddItemFragment : Fragment() {
                                     edProductAmount.text.toString().toInt()
                                 val productCity = edProductCity.text.toString()
                                 val productPrice =
-                                    edProductPrice.text.toString().toInt()
+                                    edProductPrice.text.toString().toDouble()
                                 saveProduct(
                                     productPhoto = productPhoto,
                                     productName = productName,
@@ -171,7 +168,7 @@ class AddItemFragment : Fragment() {
         productLink: String,
         productAmount: Int,
         productCity: String,
-        productPrice: Int
+        productPrice: Double
     ) {
 
         val productDomain = ProductDomain(

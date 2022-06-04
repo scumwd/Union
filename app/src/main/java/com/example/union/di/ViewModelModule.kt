@@ -7,6 +7,7 @@ import com.example.union.presentation.screen.ItemDetail.ItemDetailViewModel
 import com.example.union.presentation.screen.addItem.AddItemViewModel
 import com.example.union.presentation.screen.home.HomeViewModel
 import com.example.union.presentation.screen.login.AuthenticationViewModel
+import com.example.union.presentation.screen.orderDetail.OrderDetailViewModel
 import com.example.union.presentation.screen.profile.ProfileViewModel
 import com.example.union.presentation.screen.register.AuthorizationViewModel
 import dagger.Binds
@@ -26,6 +27,13 @@ interface ViewModelModule {
     @ViewModelKey(AddItemViewModel::class)
     fun bindAddItemViewModel(
         viewModel: AddItemViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(OrderDetailViewModel::class)
+    fun bindOrderDetailViewModel(
+        viewModel: OrderDetailViewModel
     ): ViewModel
 
     @Binds

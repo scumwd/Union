@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,10 +13,14 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.domain.models.OrderDomain
+import com.example.domain.models.OrdersWithUsers
 import com.example.domain.models.ProductDomain
+import com.example.domain.models.UserWithUID
 import com.example.union.R
+import com.example.union.adapter.UserAdapter
 import com.example.union.app.App
 import com.example.union.databinding.ItemDetailFragmentBinding
 import com.example.union.presentation.MainActivity
@@ -28,6 +33,8 @@ class ItemDetailFragment : Fragment() {
     }
 
     lateinit var binding: ItemDetailFragmentBinding
+    lateinit var recyclerView: RecyclerView
+    lateinit var adapter: UserAdapter
     lateinit var currentProductDomain: ProductDomain
 
     override fun onCreateView(
@@ -51,7 +58,13 @@ class ItemDetailFragment : Fragment() {
     private fun init() {
         binding.run {
 
+            recyclerView = rvUsers
+            adapter = UserAdapter()
+            recyclerView.adapter = adapter
+
             displayProduct()
+
+            displayUsers()
 
             tvLink.setOnClickListener {
                 goToLink()
@@ -75,54 +88,68 @@ class ItemDetailFragment : Fragment() {
         }
     }
 
+    private fun displayUsers() {
+        lifecycleScope.launch {
+            val orderList = viewModel.getOrderByProductLink(currentProductDomain.productID)
+            if (orderList.isNotEmpty()) {
+                adapter.setList(orderList)
+            }
+        }
+
+    }
+
     private fun goToLink() {
         try {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(currentProductDomain.productLink))
             startActivity(intent)
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             Toast.makeText(requireContext(), "Ссылка недействительна.", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun buyProduct() {
-        viewModel.getOrder()
         lifecycleScope.launch(Dispatchers.IO) {
-            if (currentProductDomain.productID.let { viewModel.checkOrder(it) }) {
-                withContext(lifecycleScope.coroutineContext) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Вы уже участвуете в покупке.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } else {
-                insertOrderIntoDb()
-                currentProductDomain.totalAmount =
-                    binding.edTotalAmount.text.toString().toInt() + currentProductDomain.totalAmount
-                val productDomain = ProductDomain(
-                    productID = currentProductDomain.productID,
-                    productName = currentProductDomain.productName,
-                    productLink = currentProductDomain.productLink,
-                    productPrice = currentProductDomain.productPrice,
-                    amount = currentProductDomain.amount,
-                    totalAmount = currentProductDomain.totalAmount,
-                    city = currentProductDomain.city,
-                    productPhoto = currentProductDomain.productPhoto
-                )
-                withContext(lifecycleScope.coroutineContext){
-                    displayProduct()
-                }
-                viewModel.update(productDomain)
-                withContext(lifecycleScope.coroutineContext) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Вы успешно зарезервировали товар.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+            if (viewModel.getOrder()) {
+                if (currentProductDomain.productID.let { viewModel.checkOrder(it) }) {
+                    withContext(lifecycleScope.coroutineContext) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Вы уже участвуете в покупке.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    insertOrderIntoDb()
+                    currentProductDomain.totalAmount =
+                        binding.edTotalAmount.text.toString()
+                            .toInt() + currentProductDomain.totalAmount
+                    val productDomain = ProductDomain(
+                        productID = currentProductDomain.productID,
+                        productName = currentProductDomain.productName,
+                        productLink = currentProductDomain.productLink,
+                        productPrice = currentProductDomain.productPrice,
+                        amount = currentProductDomain.amount,
+                        totalAmount = currentProductDomain.totalAmount,
+                        city = currentProductDomain.city,
+                        productPhoto = currentProductDomain.productPhoto
+                    )
+                    withContext(lifecycleScope.coroutineContext) {
+                        displayProduct()
+                    }
+                    viewModel.update(productDomain)
+                    withContext(lifecycleScope.coroutineContext) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Вы успешно зарезервировали товар.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    if (viewModel.getOrder())
+                        displayUsers()
                 }
             }
         }
+
     }
 
     @SuppressLint("SetTextI18n")

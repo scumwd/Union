@@ -21,51 +21,61 @@ import com.example.domain.repository.ProductRepository
 import com.example.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
 class DataModule {
 
     @Provides
+    @Singleton
     fun provideProductRepository(productDao: ProductDao, productFirebase: ProductFirebase): ProductRepository {
         return ProductRepositoryImpl(productDao, productFirebase)
     }
 
     @Provides
+    @Singleton
     fun provideProductFirebase(): ProductFirebase {
         return ProductFirebaseImpl()
     }
 
     @Provides
+    @Singleton
     fun provideProductDb(context: Context): ProductDao {
         return ProductDb.getInstance(context).getProductDao()
     }
 
     @Provides
+    @Singleton
     fun providerOrderRepository(orderDao: OrderDao, orderFirebase: OrderFirebase): OrderRepository {
         return OrderRepositoryImpl(orderDao,orderFirebase)
     }
 
     @Provides
+    @Singleton
     fun provideOrderFirebase(): OrderFirebase {
         return OrderFirebaseImpl()
     }
 
     @Provides
+    @Singleton
     fun providerOrderDb(context: Context): OrderDao {
         return OrderDb.getInstance(context).getOrderDao()
     }
 
     @Provides
+    @Singleton
     fun provideUserRepository(userStorage: UserStorage,userFirebase: UserFirebase): UserRepository {
         return UserRepositoryImpl(userStorage,userFirebase)
     }
 
     @Provides
+    @Singleton
     fun provideUserFirebase(): UserFirebase {
         return UserFirebaseImpl()
     }
 
     @Provides
+    @Singleton
     fun provideUserDb(context: Context): UserStorage {
         return UserStorageImpl.getInstance(context).getUserDao()
     }

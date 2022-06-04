@@ -8,7 +8,9 @@ interface UserRepository {
 
     fun getUser(): LiveData<UserWithUID>
 
-    fun saveUser(userCloudData: UserWithUID?, onSuccess: () -> Unit)
+    suspend fun getUsersById(userId: String) : UserWithUID
+
+    suspend fun saveUser(userCloudData: List<UserWithUID?>, onSuccess: () -> Unit)
 
     fun signOut()
 
@@ -20,6 +22,6 @@ interface UserRepository {
 
     suspend fun insertUserFirebase(userWithUID: UserWithUID)
 
-    suspend fun getUserFirebase() : UserWithUID?
+    suspend fun getUserFirebase() : List<UserWithUID?>
 
 }

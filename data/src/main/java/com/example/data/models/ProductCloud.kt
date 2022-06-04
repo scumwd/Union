@@ -4,7 +4,7 @@ class ProductCloud(
     var productID: String,
     var productName: String,
     var productLink: String,
-    var productPrice: Int,
+    var productPrice: Double,
     var amount: Int,
     var totalAmount: Int,
     var productCity: String,

@@ -2,6 +2,7 @@ package com.example.data.storage.user
 
 import android.util.Log
 import com.example.data.USER_KEY
+import com.example.data.models.ProductCloudData
 import com.example.data.models.UserCloudData
 import com.example.domain.models.UserDomain
 import com.example.domain.models.UserWithUID
@@ -64,18 +65,20 @@ class UserFirebaseImpl: UserFirebase {
         myRef.child(userWithUID.userId).setValue(userWithUID)
     }
 
-    override suspend fun getUsers(): UserCloudData? {
-        mAuth = FirebaseAuth.getInstance()
-        val currentUserUID: String
-        mAuth.currentUser?.uid.let { currentUserUID = it.toString() }
+    override suspend fun getUsers(): List<UserCloudData?> {
 
         val rootRef = FirebaseDatabase.getInstance().reference
-        val messageRef = rootRef.child(USER_KEY).child(currentUserUID)
+        val messageRef = rootRef.child(USER_KEY)
 
-        val user: UserCloudData? = suspendCancellableCoroutine {
+        val user: List<UserCloudData?> = suspendCancellableCoroutine {
             val valueEventListener: ValueEventListener = object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    it.resume(dataSnapshot.getValue(UserCloudData::class.java)){}
+                    val usersList: MutableList<UserCloudData?> = mutableListOf<UserCloudData?>()
+                    for (ds in dataSnapshot.children) {
+                        val messages: UserCloudData? = ds.getValue(UserCloudData::class.java)
+                        usersList.add(messages)
+                    }
+                    it.resume(usersList) {}
                 }
 
                 override fun onCancelled(error: DatabaseError) {

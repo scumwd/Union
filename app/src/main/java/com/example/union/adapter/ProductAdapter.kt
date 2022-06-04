@@ -1,24 +1,19 @@
 package com.example.union.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
 import com.example.union.R
-import com.example.union.presentation.APP
-import com.example.union.presentation.screen.home.HomeFragment
-import com.example.union.presentation.screen.profile.ProfileFragment.Companion.clickProduct
 import kotlinx.android.synthetic.main.item.view.*
 
-class ProductAdapter : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+class ProductAdapter(val context: Context) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
     var listProduct = emptyList<ProductDomain>()
 
@@ -37,7 +32,7 @@ class ProductAdapter : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() 
             "${listProduct[position].totalAmount} из ${listProduct[position].amount}"
         holder.itemView.tvPrice.text = "${listProduct[position].productPrice}$ за шт"
         Glide
-            .with(APP)
+            .with(context)
             .load(listProduct[position].productPhoto)
             .error(R.drawable.ic_empty_photo)
             .dontAnimate()
@@ -57,6 +52,12 @@ class ProductAdapter : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() 
                 localList.add(listProduct)
         }
         listProduct = localList
+        notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setFiltered(list: List<ProductDomain>) {
+        listProduct = list
         notifyDataSetChanged()
     }
 

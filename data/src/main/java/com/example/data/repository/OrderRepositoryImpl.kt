@@ -5,10 +5,8 @@ import androidx.lifecycle.map
 import com.example.data.models.OrderCloud
 import com.example.data.models.OrderRoom
 import com.example.data.storage.order.OrderDao
-import com.example.data.models.OrderCloudData
 import com.example.data.storage.order.OrderFirebase
 import com.example.domain.models.OrderDomain
-import com.example.domain.models.ProductDomain
 import com.example.domain.repository.OrderRepository
 import com.google.firebase.auth.FirebaseAuth
 
@@ -71,6 +69,29 @@ class OrderRepositoryImpl(
         }
 
         onSuccess()
+    }
+
+    override suspend fun getOrderById(productId: String): List<OrderDomain?> {
+        val daoList  = orderDao.getOrdersById(productId)
+        val domainList: MutableList<OrderDomain?> = ArrayList()
+        if (daoList.isEmpty()){
+            return emptyList()
+        }else
+        {
+            daoList.forEach {
+                val orderDomain = it?.let { it1 ->
+                    OrderDomain(
+                        userId = it1.userId,
+                        productID = it.productId,
+                        totalAmount = it.totalAmount
+                    )
+                }
+                domainList.add(orderDomain)
+            }
+            return domainList
+        }
+
+
     }
 
 

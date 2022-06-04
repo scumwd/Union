@@ -2,6 +2,7 @@ package com.example.union.presentation.screen.profile
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.domain.auth.SignOutUseCase
 import com.example.domain.getFromDb.GetOrderDb
 import com.example.domain.getFromDb.GetProductDb
@@ -10,6 +11,12 @@ import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
 import com.example.domain.models.UserWithUID
 import com.example.domain.save.GetOrderFromFireBase
+import com.example.domain.save.GetUserFromFireBase
+import com.google.android.gms.tasks.SuccessContinuation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ProfileViewModel @Inject constructor(
@@ -29,10 +36,11 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun getOrder() {
-        getOrderFromFireBase.getAllProduct()
+        viewModelScope.launch(Dispatchers.IO) { getOrderFromFireBase.getAllProduct() }
     }
 
-    fun getUser(): LiveData<UserWithUID> {
+
+    fun getUserDb(): LiveData<UserWithUID> {
         return getUserDb.execute()
     }
 

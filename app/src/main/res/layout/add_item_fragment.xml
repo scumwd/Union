@@ -17,7 +17,7 @@
         android:background="@drawable/rounded_edittext"
         android:ems="10"
         android:hint="2"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         android:paddingLeft="10dp"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,29 +1,27 @@
 package com.example.union.presentation.screen.profile
 
+import android.R
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.example.domain.models.OrderDomain
-import com.example.domain.models.ProductDomain
-import com.example.union.R
 import com.example.union.adapter.OrderAdapter
-import com.example.union.app.App
 import com.example.union.databinding.ProfileFragmentBinding
-import com.example.union.presentation.APP
 import com.example.union.presentation.MainActivity
-import com.example.union.presentation.screen.addItem.AddItemViewModel
 import com.example.union.presentation.screen.login.AuthenticationActivity
-import javax.inject.Inject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
-
 
     private val viewModel: ProfileViewModel by viewModels {
         (activity as MainActivity).factory
@@ -32,15 +30,6 @@ class ProfileFragment : Fragment() {
     lateinit var recyclerView: RecyclerView
     lateinit var adapter: OrderAdapter
     lateinit var binding: ProfileFragmentBinding
-
-    companion object {
-        fun clickProduct(productDomain: ProductDomain, orderDomain: OrderDomain) {
-            val bundle = Bundle()
-            bundle.putSerializable("product", productDomain)
-            bundle.putSerializable("order", orderDomain)
-            APP.navController.navigate(R.id.action_profileFragment_to_orderDetailFragment, bundle)
-        }
-    }
 
 
     override fun onCreateView(
@@ -55,18 +44,18 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //(requireContext().applicationContext as App).appComponent.inject(this)
-
         init()
     }
 
     @SuppressLint("SetTextI18n")
     private fun init() {
-        //viewModel = ViewModelProvider(this, viewModelFactory)[ProfileViewModel::class.java]
+
         displayUserInfo()
         viewModel.getOrder()
+
+        viewModel.getOrder()
         recyclerView = binding.rvOrder
-        adapter = OrderAdapter()
+        adapter = OrderAdapter(requireContext())
         recyclerView.adapter = adapter
 
         displayOrders()
@@ -76,7 +65,7 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun signOut(){
+    private fun signOut() {
         viewModel.signOut()
         val intent = Intent(this.context, AuthenticationActivity::class.java)
         startActivity(intent)
@@ -84,14 +73,14 @@ class ProfileFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun displayUserInfo(){
-        viewModel.getUser().observe(viewLifecycleOwner, { user ->
+    private fun displayUserInfo() {
+        viewModel.getUserDb().observe(viewLifecycleOwner, { user ->
             binding.tvName.text = "${user.firstName} ${user.lastName}"
         })
     }
 
     @SuppressLint("SetTextI18n")
-    private fun displayOrders(){
+    private fun displayOrders() {
         viewModel.getAllOrder().observe(viewLifecycleOwner, { localListOrder ->
             viewModel.getAllProduct().observe(viewLifecycleOwner, { localListProduct ->
                 adapter.setList(listProduct = localListProduct, listOrder = localListOrder)

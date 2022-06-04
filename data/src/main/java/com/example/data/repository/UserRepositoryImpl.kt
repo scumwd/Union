@@ -11,23 +11,27 @@ import com.example.domain.models.UserWithUID
 import com.example.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 
-class UserRepositoryImpl(private val userStorage: UserStorage, private val userFirebase: UserFirebase) :
+class UserRepositoryImpl(
+    private val userStorage: UserStorage,
+    private val userFirebase: UserFirebase
+) :
     UserRepository {
 
     lateinit var mAuth: FirebaseAuth
 
-    override fun saveUser(userCloudData: UserWithUID?, onSuccess: () -> Unit) {
-        val user = userCloudData?.let {
+    override suspend fun saveUser(userCloudData: List<UserWithUID?>, onSuccess: () -> Unit) {
+
+        val listUsers = userCloudData.map {
             UserRoom(
-                userId = userCloudData.userId,
-                email = userCloudData.email,
-                firstName = userCloudData.firstName,
-                lastName = it.lastName
+                userId = it?.userId.toString(),
+                firstName = it?.firstName.toString(),
+                lastName = it?.lastName.toString(),
+                email = it?.email.toString()
             )
         }
-        if (user != null) {
-            userStorage.insert(user)
-        }
+       listUsers.forEach {
+           userStorage.insert(it)
+       }
         onSuccess()
     }
 
@@ -36,7 +40,7 @@ class UserRepositoryImpl(private val userStorage: UserStorage, private val userF
     }
 
     override suspend fun authentication(email: String, password: String): Boolean {
-        return userFirebase.authentication(email,password)
+        return userFirebase.authentication(email, password)
     }
 
     override suspend fun authorization(userDomain: UserDomain): UserWithUID? {
@@ -51,14 +55,14 @@ class UserRepositoryImpl(private val userStorage: UserStorage, private val userF
         userFirebase.insertUser(userWithUID)
     }
 
-    override suspend fun getUserFirebase() : UserWithUID? {
+    override suspend fun getUserFirebase(): List<UserWithUID?> {
         val userCloud = userFirebase.getUsers()
-        return userCloud?.let {
+        return userCloud.map {
             UserWithUID(
-                userId = it.getUserId(),
-                email = userCloud.getEmail(),
-                lastName = userCloud.getLastName(),
-                firstName = userCloud.getFirstName()
+                userId = it?.getUserId().toString(),
+                firstName = it?.getFirstName().toString(),
+                lastName = it?.getLastName().toString(),
+                email = it?.getEmail().toString()
             )
         }
     }
@@ -72,6 +76,17 @@ class UserRepositoryImpl(private val userStorage: UserStorage, private val userF
                 email = userDb.email,
                 firstName = userDb.firstName,
                 lastName = userDb.lastName
+            )
+        }
+    }
+
+    override suspend fun getUsersById(userId: String): UserWithUID {
+        return userStorage.getUserById(userId).let {
+            UserWithUID(
+                userId = it.userId,
+                firstName = it.firstName,
+                lastName = it.lastName,
+                email = it.email
             )
         }
     }

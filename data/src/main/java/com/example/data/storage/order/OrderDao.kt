@@ -15,6 +15,9 @@ interface OrderDao {
     @Query("SELECT * from order_table where userId = :userid")
     fun getOrders(userid: String): LiveData<List<OrderRoom>>
 
+    @Query("SELECT * from order_table where productId = :productId")
+    fun getOrdersById(productId: String): List<OrderRoom?>
+
     @Query("SELECT * from order_table where userId = :userid and productId = :productId")
     fun getListOrder(userid: String, productId: String): OrderRoom?
 }

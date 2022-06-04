@@ -7,10 +7,9 @@ import kotlinx.coroutines.launch
 
 class GetOrderFromFireBase(private val orderRepository: OrderRepository) {
 
-    fun getAllProduct() {
-        GlobalScope.launch (Dispatchers.IO){
-            val listFireBase = orderRepository.getOrdersFirebase()
-            orderRepository.insertOrder(listFireBase) {}
-        }
+    suspend fun getAllProduct(): Boolean {
+        val listFireBase = orderRepository.getOrdersFirebase()
+        orderRepository.insertOrder(listFireBase) {}
+        return true
     }
 }

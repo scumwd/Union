@@ -16,5 +16,5 @@ interface UserFirebase {
 
     suspend fun insertUser(userWithUID: UserWithUID)
 
-    suspend fun getUsers(): UserCloudData?
+    suspend fun getUsers(): List<UserCloudData?>
 }

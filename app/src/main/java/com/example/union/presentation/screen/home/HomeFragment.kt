@@ -8,11 +8,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.Toast
+import androidx.appcompat.widget.SearchView
+import androidx.compose.ui.text.toLowerCase
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.example.domain.models.ProductDomain
 import com.example.union.adapter.ProductAdapter
 import com.example.union.databinding.HomeFragmentBinding
 import com.example.union.presentation.MainActivity
+import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.ArrayList
 
 class HomeFragment : Fragment() {
 
@@ -23,6 +31,7 @@ class HomeFragment : Fragment() {
     lateinit var recyclerView: RecyclerView
     lateinit var binding: HomeFragmentBinding
     lateinit var adapter: ProductAdapter
+    lateinit var searchView: SearchView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,19 +48,60 @@ class HomeFragment : Fragment() {
     }
 
     private fun init() {
+        searchView = binding.searchView
+        searchView.clearFocus()
+        recyclerView = binding.rvProduct
+        adapter = ProductAdapter(requireContext())
+        recyclerView.adapter = adapter
+
         val pd = Dialog(requireContext(), R.style.Theme_Black)
-        val view: View = LayoutInflater.from(context).inflate(com.example.union.R.layout.progressbar, null)
+        val view: View =
+            LayoutInflater.from(context).inflate(com.example.union.R.layout.progressbar, null)
         pd.requestWindowFeature(Window.FEATURE_NO_TITLE)
         pd.window?.setBackgroundDrawableResource(com.example.union.R.color.transparent)
         pd.setContentView(view)
+        pd.show()
+        lifecycleScope.launch {
+            if (viewModel.getProductsFromFireBase() && viewModel.getUserFirebase()){
+                viewModel.getAllProduct().observe(viewLifecycleOwner, { listProduct ->
+                    adapter.setList(listProduct.asReversed())
+                })
+                pd.hide()
+            }
+        }
 
-        viewModel.getUser()
-        viewModel.getProductsFromFireBase()
-        recyclerView = binding.rvProduct
-        adapter = ProductAdapter()
-        recyclerView.adapter = adapter
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filter(newText)
+                return true
+            }
+
+        })
+    }
+
+    private fun filter(newText: String?) {
         viewModel.getAllProduct().observe(viewLifecycleOwner, { listProduct ->
-            adapter.setList(listProduct.asReversed())
+            val filteredList: MutableList<ProductDomain> = ArrayList()
+            for (item in listProduct) {
+                if (newText != null) {
+                    if (item.productName.lowercase(Locale.getDefault()).contains(
+                            newText.lowercase(
+                                Locale.getDefault()
+                            )
+                        )
+                    ) {
+                        filteredList.add(item)
+                    }
+                }
+            }
+            if (filteredList.isEmpty())
+                Toast.makeText(requireContext(), "Ничего не найдено", Toast.LENGTH_SHORT).show()
+            else
+                adapter.setFiltered(filteredList)
         })
     }
 }

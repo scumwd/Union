@@ -9,7 +9,7 @@ import com.example.data.models.ProductRoom
 import com.example.data.models.UserRoom
 import com.example.data.storage.product.ProductDao
 
-@Database(entities = [ProductRoom::class, OrderRoom::class, UserRoom::class], version = 9)
+@Database(entities = [ProductRoom::class, OrderRoom::class, UserRoom::class], version = 10)
 abstract class OrderDb : RoomDatabase() {
     abstract fun getOrderDao(): ProductDao
 
@@ -19,7 +19,7 @@ abstract class OrderDb : RoomDatabase() {
         @Synchronized
         fun getInstance(context: Context): OrderDb {
             return if (database == null) {
-                database = Room.databaseBuilder(context, OrderDb::class.java, "dbOrd")
+                database = Room.databaseBuilder(context, OrderDb::class.java, "dbOrd").fallbackToDestructiveMigration()
                     .allowMainThreadQueries().build()
                 database as OrderDb
             } else {

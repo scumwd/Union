@@ -9,27 +9,34 @@ import com.example.domain.save.GetProductFromFireBase
 import com.example.domain.save.GetUserFromFireBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
     private val getProductFromFireBase: GetProductFromFireBase,
-    private val getProductDb: GetProductDb,
-    private val getUser: GetUserFromFireBase
-): ViewModel() {
+    private val getUser: GetUserFromFireBase,
+    private val getProductDb: GetProductDb
+) : ViewModel() {
 
 
     fun getAllProduct(): LiveData<List<ProductDomain>> {
         return getProductDb.execute()
     }
 
-    fun getProductsFromFireBase() {
-        viewModelScope.launch(Dispatchers.IO) {
-            getProductFromFireBase.getAllProduct()
+    suspend fun getProductsFromFireBase() : Boolean {
+        return suspendCancellableCoroutine {
+            viewModelScope.launch(Dispatchers.IO) {
+                it.resume(getProductFromFireBase.getAllProduct()) {}
+            }
         }
+
     }
 
-    fun getUser(){
-        getUser.getUser()
+    suspend fun getUserFirebase() : Boolean = suspendCancellableCoroutine {continuation ->
+        viewModelScope.launch {
+            continuation.resume(getUser.getUser()) {}
+        }
     }
 
 }

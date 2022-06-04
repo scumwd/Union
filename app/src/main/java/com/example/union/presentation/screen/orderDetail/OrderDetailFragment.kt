@@ -11,14 +11,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.domain.models.OrderDomain
 import com.example.domain.models.ProductDomain
 import com.example.union.R
+import com.example.union.adapter.UserAdapter
+import com.example.union.app.App
 import com.example.union.databinding.OrderDetailFragmentBinding
 import com.example.union.presentation.MainActivity
 import com.example.union.presentation.screen.addItem.AddItemViewModel
+import kotlinx.coroutines.launch
 
 class OrderDetailFragment : Fragment() {
 
@@ -29,6 +34,8 @@ class OrderDetailFragment : Fragment() {
     }
     lateinit var currentProductDomain: ProductDomain
     lateinit var currentOrder: OrderDomain
+    lateinit var recyclerView: RecyclerView
+    lateinit var adapter: UserAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,11 +49,19 @@ class OrderDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (requireContext().applicationContext as App).appComponent.inject(this)
+
         init()
     }
 
     private fun init() {
+        recyclerView = binding.rvUsers
+        adapter = UserAdapter()
+        recyclerView.adapter = adapter
+
         displayOrder()
+        displayUsers()
 
         binding.tvLink.setOnClickListener {
             goToLink()
@@ -54,6 +69,15 @@ class OrderDetailFragment : Fragment() {
 
         binding.btnBack.setOnClickListener {
             navigateToProfileFragment()
+        }
+    }
+
+    private fun displayUsers() {
+        lifecycleScope.launch {
+            val orderList = viewModel.getOrderByProductLink(currentProductDomain.productID)
+            if (orderList.isNotEmpty()) {
+                adapter.setList(orderList)
+            }
         }
     }
 

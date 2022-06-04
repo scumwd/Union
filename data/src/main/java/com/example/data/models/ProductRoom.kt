@@ -19,7 +19,7 @@ class ProductRoom(
     var productLink: String = "",
 
     @ColumnInfo
-    var productPrice: Int = 0,
+    var productPrice: Double = 0.0,
 
     @ColumnInfo
     var amount: Int = 0,

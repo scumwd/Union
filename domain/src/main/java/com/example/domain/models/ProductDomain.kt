@@ -6,7 +6,7 @@ class ProductDomain(
     var productID: String = "",
     val productName: String,
     val productLink: String,
-    val productPrice: Int,
+    val productPrice: Double,
     val amount: Int,
     var totalAmount: Int = 0,
     val city: String,

@@ -11,6 +11,8 @@ interface OrderRepository {
 
     fun insertOrder(listCloud: List<OrderDomain?>, onSuccess: () -> Unit)
 
+    suspend fun getOrderById(productId: String) : List<OrderDomain?>
+
     suspend fun insertOrderFireBase(orderDomain: OrderDomain)
 
     suspend fun getOrdersFirebase() : List<OrderDomain>

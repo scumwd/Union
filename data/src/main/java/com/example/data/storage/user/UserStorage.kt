@@ -15,4 +15,7 @@ interface UserStorage {
 
     @Query("SELECT * from user_table where userId = :userid")
     fun getUser(userid: String): LiveData<UserRoom>
+
+    @Query("SELECT * from user_table where userId = :userId")
+    fun getUserById(userId: String): UserRoom
 }

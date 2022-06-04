@@ -146,7 +146,7 @@ class ProductRepositoryImpl(
                 productID = cloud?.getProductId().toString(),
                 productName = cloud?.getProductName().toString(),
                 productLink = cloud?.getProductLink().toString(),
-                productPrice = cloud?.getProductPrice().toString().toInt(),
+                productPrice = cloud?.getProductPrice().toString().toDouble(),
                 city = cloud?.getProductCity().toString(),
                 productPhoto = cloud?.getProductPhoto().toString(),
                 amount = cloud?.getAmount().toString().toInt(),

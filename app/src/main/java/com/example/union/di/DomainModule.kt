@@ -58,6 +58,11 @@ class DomainModule {
     }
 
     @Provides
+    fun provideGetOrderById(orderRepository: OrderRepository,userRepository: UserRepository) : GetOrderById {
+        return GetOrderById(orderRepository,userRepository)
+    }
+
+    @Provides
     fun provideSignOutUseCase(userRepository: UserRepository) : SignOutUseCase {
         return SignOutUseCase(userRepository)
     }
