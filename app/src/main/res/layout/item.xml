@@ -36,11 +36,13 @@
 
         <TextView
             android:id="@+id/tvName"
-            android:layout_width="wrap_content"
+            android:layout_width="125dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
             android:layout_marginTop="24dp"
             android:text="Ёлки"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:textColor="@color/white"
             android:textSize="7pt"
             android:textStyle="bold"
