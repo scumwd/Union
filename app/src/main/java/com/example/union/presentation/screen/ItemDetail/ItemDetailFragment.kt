@@ -126,33 +126,43 @@ class ItemDetailFragment : Fragment() {
                         ).show()
                     }
                 } else {
-                    insertOrderIntoDb()
-                    currentProductDomain.totalAmount =
-                        binding.edTotalAmount.text.toString()
-                            .toInt() + currentProductDomain.totalAmount
-                    val productDomain = ProductDomain(
-                        productID = currentProductDomain.productID,
-                        productName = currentProductDomain.productName,
-                        productLink = currentProductDomain.productLink,
-                        productPrice = currentProductDomain.productPrice,
-                        amount = currentProductDomain.amount,
-                        totalAmount = currentProductDomain.totalAmount,
-                        city = currentProductDomain.city,
-                        productPhoto = currentProductDomain.productPhoto
-                    )
-                    withContext(lifecycleScope.coroutineContext) {
-                        displayProduct()
+                    if(binding.edTotalAmount.text.toString() == "" || binding.edTotalAmount.text.toString().toInt() < 1 )
+                        withContext(lifecycleScope.coroutineContext) {
+                            Toast.makeText(
+                                requireContext(),
+                                "Некорректные данные.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    else{
+                        insertOrderIntoDb()
+                        currentProductDomain.totalAmount =
+                            binding.edTotalAmount.text.toString()
+                                .toInt() + currentProductDomain.totalAmount
+                        val productDomain = ProductDomain(
+                            productID = currentProductDomain.productID,
+                            productName = currentProductDomain.productName,
+                            productLink = currentProductDomain.productLink,
+                            productPrice = currentProductDomain.productPrice,
+                            amount = currentProductDomain.amount,
+                            totalAmount = currentProductDomain.totalAmount,
+                            city = currentProductDomain.city,
+                            productPhoto = currentProductDomain.productPhoto
+                        )
+                        withContext(lifecycleScope.coroutineContext) {
+                            displayProduct()
+                        }
+                        viewModel.update(productDomain)
+                        withContext(lifecycleScope.coroutineContext) {
+                            Toast.makeText(
+                                requireContext(),
+                                "Вы успешно зарезервировали товар.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        if (viewModel.getOrder())
+                            displayUsers()
                     }
-                    viewModel.update(productDomain)
-                    withContext(lifecycleScope.coroutineContext) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Вы успешно зарезервировали товар.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    if (viewModel.getOrder())
-                        displayUsers()
                 }
             }
         }
