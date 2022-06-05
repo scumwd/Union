@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.domain.models.ProductDomain
 import com.example.union.R
 import kotlinx.android.synthetic.main.item.view.*
+
 
 class ProductAdapter(val context: Context) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
@@ -46,13 +48,17 @@ class ProductAdapter(val context: Context) : RecyclerView.Adapter<ProductAdapter
 
     @SuppressLint("NotifyDataSetChanged")
     fun setList(list: List<ProductDomain>) {
-        var localList = mutableListOf<ProductDomain>()
+        val localList = mutableListOf<ProductDomain>()
         list.forEach { listProduct->
             if(listProduct.amount > listProduct.totalAmount)
                 localList.add(listProduct)
         }
+
+        val diffUtilCallback = ProductsDiffUtilCallback(listProduct, localList)
+        val diffResult = DiffUtil.calculateDiff(diffUtilCallback)
+
         listProduct = localList
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     @SuppressLint("NotifyDataSetChanged")
