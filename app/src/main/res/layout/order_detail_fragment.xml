@@ -141,12 +141,12 @@ tools:context=".presentation.screen.orderDetail.OrderDetailFragment">
         android:layout_width="280dp"
         android:layout_height="0dp"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="90dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="60dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_link">
+        app:layout_constraintTop_toBottomOf="@+id/textView9">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_Users"
@@ -156,5 +156,32 @@ tools:context=".presentation.screen.orderDetail.OrderDetailFragment">
             app:spanCount="2"
             tools:listitem="@layout/item_user" />
     </ScrollView>
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="108dp"
+        android:text="Участники:"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_totalAmount" />
+
+    <TextView
+        android:id="@+id/emptyRvItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Этот товар еще никто не зарезервировал."
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9"
+        app:layout_constraintVertical_bias="0.17000002" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

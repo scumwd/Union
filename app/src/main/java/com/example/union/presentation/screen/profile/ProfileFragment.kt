@@ -1,25 +1,19 @@
 package com.example.union.presentation.screen.profile
 
-import android.R
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
+import android.widget.TextView
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.union.adapter.OrderAdapter
 import com.example.union.databinding.ProfileFragmentBinding
 import com.example.union.presentation.MainActivity
 import com.example.union.presentation.screen.login.AuthenticationActivity
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
 
@@ -30,6 +24,7 @@ class ProfileFragment : Fragment() {
     lateinit var recyclerView: RecyclerView
     lateinit var adapter: OrderAdapter
     lateinit var binding: ProfileFragmentBinding
+    lateinit var emptyRecyclerView: TextView
 
 
     override fun onCreateView(
@@ -50,10 +45,11 @@ class ProfileFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun init() {
 
+        emptyRecyclerView = binding.emptyRvProf
+
         displayUserInfo()
         viewModel.getOrder()
 
-        viewModel.getOrder()
         recyclerView = binding.rvOrder
         adapter = OrderAdapter(requireContext())
         recyclerView.adapter = adapter
@@ -83,7 +79,15 @@ class ProfileFragment : Fragment() {
     private fun displayOrders() {
         viewModel.getAllOrder().observe(viewLifecycleOwner, { localListOrder ->
             viewModel.getAllProduct().observe(viewLifecycleOwner, { localListProduct ->
-                adapter.setList(listProduct = localListProduct, listOrder = localListOrder)
+                if (localListOrder.isNotEmpty()){
+                    recyclerView.visibility = View.VISIBLE
+                    emptyRecyclerView.visibility = View.GONE
+                    adapter.setList(listProduct = localListProduct, listOrder = localListOrder)
+                }
+                else{
+                    emptyRecyclerView.visibility = View.VISIBLE
+                }
+
                 binding.tvCountBuy.text = "Кол-во покупок: ${localListOrder.size}"
             })
         })

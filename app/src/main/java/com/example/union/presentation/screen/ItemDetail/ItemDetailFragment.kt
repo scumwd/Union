@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -36,6 +37,7 @@ class ItemDetailFragment : Fragment() {
     lateinit var recyclerView: RecyclerView
     lateinit var adapter: UserAdapter
     lateinit var currentProductDomain: ProductDomain
+    lateinit var emptyRecyclerView: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +63,7 @@ class ItemDetailFragment : Fragment() {
             recyclerView = rvUsers
             adapter = UserAdapter()
             recyclerView.adapter = adapter
+            emptyRecyclerView = binding.emptyRvItem
 
             displayProduct()
 
@@ -92,7 +95,11 @@ class ItemDetailFragment : Fragment() {
         lifecycleScope.launch {
             val orderList = viewModel.getOrderByProductLink(currentProductDomain.productID)
             if (orderList.isNotEmpty()) {
+                recyclerView.visibility = View.VISIBLE
+                emptyRecyclerView.visibility = View.GONE
                 adapter.setList(orderList)
+            } else {
+                emptyRecyclerView.visibility = View.VISIBLE
             }
         }
 

@@ -143,6 +143,7 @@ class AddItemFragment : Fragment() {
                                     productCity = productCity,
                                     productAmount = productAmount
                                 )
+                                viewModel.getProductsFromFireBase()
                                 pd.hide()
                             }
                         }

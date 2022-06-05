@@ -66,11 +66,21 @@ class ProductFirebaseImpl: ProductFirebase {
             val valueEventListener: ValueEventListener = object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val productsList: MutableList<ProductCloudData?> = mutableListOf<ProductCloudData?>()
+                    var empty = false
                     for (ds in dataSnapshot.children) {
-                        val messages: ProductCloudData? = ds.getValue(ProductCloudData::class.java)
-                        productsList.add(messages)
+                        if (ds.value == null){
+                            empty = true
+                            break
+                        }else{
+                            val messages: ProductCloudData? = ds.getValue(ProductCloudData::class.java)
+                            productsList.add(messages)
+                            empty=false
+                        }
                     }
-                    it.resume(productsList) {}
+                    if (empty){
+                        it.resume(emptyList()) {}
+                    }else
+                        it.resume(productsList) {}
                 }
 
                 override fun onCancelled(error: DatabaseError) {
